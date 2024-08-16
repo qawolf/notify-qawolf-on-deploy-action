@@ -1,0 +1,32 @@
+name: "Notify QA Wolf on Deploy"
+description: "Notify QA Wolf after deployment to trigger runs"
+inputs:
+  qawolf-api-key:
+    description: "QA Wolf API key. You can find it in the application team settings page."
+    required: true
+  sha:
+    description: "(May be required depending on your setup). The SHA of the git commit to be tested.  Refer to our official documentation for more details."
+    required: false
+  branch:
+    description: "(May be required depending on your setup). The git branch to be tested.  Refer to our official documentation for more details."
+    required: false
+  deployment-type:
+    description: "(May be required depending on your setup). The trigger deployment type.  Refer to our official documentation for more details."
+    required: false
+  deployment-url:
+    description: "(May be required depending on your setup). The URL of the deployment to be tested.  Refer to our official documentation for more details."
+    required: false
+  deduplication-key:
+    description: "An advanced feature to control runs superseding.  Refer to our official documentation for more details."
+    required: false
+  commit-url:
+    description: "If you don't have our GitHub application installed, you can pass the commit URL and it will be surfaced in the UI. Refer to our official documentation for more details."
+  variables:
+    description: "JSON-formatted environment variables for deployment to be tested. Refer to our official documentation for more details."
+    required: false
+outputs:
+  run-id:
+    description: "The run ID corresponding to the newly created run. It can be used with ci-greenlight integration."
+runs:
+  using: "node20"
+  main: "dist/index.js"
