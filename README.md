@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify QA Wolf of deployment
-        uses: qawolf/notify-deploy-action
+        uses: qawolf/notify-deploy-action@v1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
@@ -118,7 +118,7 @@ jobs:
       # The deployment URL should be captured in that step, unless the
       # URL is statically defined for the target environment.
       - name: Notify QA Wolf of deployment
-        uses: qawolf/notify-deploy-action
+        uses: qawolf/notify-deploy-action@v1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
@@ -149,7 +149,7 @@ jobs:
       - name: Notify QA Wolf of deployment
         # Add an id for the step
         id: notify-qa-wolf
-        uses: qawolf/notify-deploy-action
+        uses: qawolf/notify-deploy-action@v1
         # ...
       - name: Utilize run-id in Subsequent Step
         run: echo "The run-id is ${{ steps.notify-qa-wolf.outputs.run-id }}"

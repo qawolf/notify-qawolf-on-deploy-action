@@ -1,5 +1,8 @@
 name: "Notify QA Wolf on Deploy"
 description: "Notify QA Wolf after deployment to trigger runs"
+branding:
+  icon: "git-merge"
+  color: "purple"
 inputs:
   qawolf-api-key:
     description: "QA Wolf API key. You can find it in the application team settings page."
