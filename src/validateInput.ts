@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+
 import { type DeployConfig } from "@qawolf/ci-sdk";
 import {
   type EnvironmentVariables,
@@ -12,6 +13,7 @@ export function validateInput():
       apiKey: string;
       deployConfig: Omit<DeployConfig, "hostingService">;
       isValid: true;
+      qawolfBaseUrl: string | undefined;
     }
   | {
       error: string;
@@ -87,6 +89,10 @@ export function validateInput():
     validatedEnvironmentVariables = result.data;
   }
 
+  // NOTE: Returns an empty string if the value is not defined.
+  const rawQawolfBaseUrl = core.getInput("qawolf-base-url").trim();
+  const qawolfBaseUrl = rawQawolfBaseUrl || undefined;
+
   return {
     apiKey: qawolfApiKey,
     deployConfig: {
@@ -99,5 +105,6 @@ export function validateInput():
       variables: validatedEnvironmentVariables,
     },
     isValid: true,
+    qawolfBaseUrl,
   };
 }

@@ -27,6 +27,10 @@ inputs:
   variables:
     description: "JSON-formatted environment variables for deployment to be tested. Refer to our official documentation for more details."
     required: false
+  qawolf-base-url:
+    required: false
+    description: >
+      The base URL of the QA Wolf API.
 outputs:
   run-id:
     description: "The run ID corresponding to the newly created run. It can be used with ci-greenlight integration."

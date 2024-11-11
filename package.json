@@ -1,6 +1,6 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.0.2",
+  "version": "v1.0.3",
   "type": "commonjs",
   "main": "dist/index.js",
   "engines": {
@@ -10,7 +10,8 @@
     "build": "ncc build src/index.ts -o dist",
     "build:clean": "tsc --build --clean && rm -rf ./dist",
     "lint": "eslint . --ext js,jsx,mjs,ts,tsx --quiet && prettier --check .",
-    "lint:fix": "eslint . --ext js,jsx,mjs,ts,tsx --fix --quiet && prettier --write .",
+    "lint:fix": "eslint . --ext js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
+    "lint:warnings": "eslint . --ext js,jsx,mjs,ts,tsx",
     "test": "jest --passWithNoTests",
     "test:watch": "npm run test -- --watch",
     "tsc:check": "tsc"

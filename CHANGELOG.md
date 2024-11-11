@@ -1,3 +1,7 @@
+## v1.0.3
+
+- Add `qawolf-base-url` optional input
+
 ## v1.0.2
 
 - Fix action name on documentation

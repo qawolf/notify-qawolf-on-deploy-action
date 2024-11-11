@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
 import { coreLogDriver, stringifyUnknown } from "@qawolf/ci-utils";
 
@@ -11,9 +12,9 @@ async function runGitHubAction() {
     core.setFailed(`Action input is invalid: ${validationResult.error}`);
     return;
   }
-  const { deployConfig, apiKey } = validationResult;
+  const { apiKey, deployConfig, qawolfBaseUrl } = validationResult;
   const { attemptNotifyDeploy } = makeQaWolfSdk(
-    { apiKey },
+    { apiKey, serviceBase: qawolfBaseUrl },
     {
       // Replace default log driver with core logging.
       log: coreLogDriver,
