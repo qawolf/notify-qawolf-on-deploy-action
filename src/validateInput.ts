@@ -1,17 +1,21 @@
 import * as core from "@actions/core";
+import * as github from "@actions/github";
 
-import { type DeployConfig } from "@qawolf/ci-sdk";
+import { type GitHubDeployConfig } from "@qawolf/ci-sdk";
 import {
   type EnvironmentVariables,
   jsonEnvironmentVariablesSchema,
 } from "@qawolf/ci-utils";
 
+import { type RelevantEventData } from "./extractRelevantDataFromEvent";
 import { urlSchema } from "./types";
 
-export function validateInput():
+export function validateInput(
+  relevantEventData: RelevantEventData | undefined,
+):
   | {
       apiKey: string;
-      deployConfig: Omit<DeployConfig, "hostingService">;
+      deployConfig: GitHubDeployConfig;
       isValid: true;
       qawolfBaseUrl: string | undefined;
     }
@@ -22,25 +26,34 @@ export function validateInput():
   const qawolfApiKey = core.getInput("qawolf-api-key", {
     required: true,
   });
-  const shaInput = core.getInput("sha", { required: false });
-  const branchInput = core.getInput("branch", {
-    required: false,
-  });
-  const deploymentTypeInput = core.getInput("deployment-type", {
-    required: false,
-  });
+  const shaInput =
+    core.getInput("sha", { required: false }) || relevantEventData?.sha;
+  const branchInput =
+    core.getInput("branch", {
+      required: false,
+    }) || relevantEventData?.branch;
+  const deploymentTypeInput =
+    core.getInput("deployment-type", {
+      required: false,
+    }) || undefined;
   const deploymentUrlInput = core.getInput("deployment-url", {
     required: false,
   });
   const environmentVariablesInput = core.getInput("variables", {
     required: false,
   });
-  const deduplicationKeyInput = core.getInput("deduplication-key", {
-    required: false,
-  });
-  const commitUrlInput = core.getInput("commit-url", {
-    required: false,
-  });
+  const deduplicationKeyInput =
+    core.getInput("deduplication-key", {
+      required: false,
+    }) || undefined;
+  const commitUrlInput =
+    core.getInput("commit-url", {
+      required: false,
+    }) || relevantEventData?.commitUrl;
+  const pullRequestNumberInput =
+    core.getInput("pull-request-number", {
+      required: false,
+    }) || relevantEventData?.pullRequestNumber;
 
   if (!shaInput && !branchInput && !deploymentTypeInput) {
     return {
@@ -101,6 +114,15 @@ export function validateInput():
       deduplicationKey: deduplicationKeyInput,
       deploymentType: deploymentTypeInput,
       deploymentUrl: validatedDeploymentUrl,
+      hostingService: "GitHub",
+      pullRequestNumber:
+        pullRequestNumberInput !== undefined
+          ? Number(pullRequestNumberInput)
+          : undefined,
+      repository: {
+        name: github.context.repo.repo,
+        owner: github.context.repo.owner,
+      },
       sha: shaInput,
       variables: validatedEnvironmentVariables,
     },

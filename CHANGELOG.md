@@ -1,3 +1,7 @@
+## v1.0.4
+
+- Extract information from Github Event and send it to `attemptNotifyDeploy`
+
 ## v1.0.3
 
 - Add `qawolf-base-url` optional input

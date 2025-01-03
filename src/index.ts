@@ -1,30 +1,38 @@
 import * as core from "@actions/core";
+import * as github from "@actions/github";
 
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
 import { coreLogDriver, stringifyUnknown } from "@qawolf/ci-utils";
 
+import { version } from "../package.json";
+
+import { extractRelevantDataFromEvent } from "./extractRelevantDataFromEvent";
 import { validateInput } from "./validateInput";
 
 async function runGitHubAction() {
+  core.debug("Extracting relevant event data.");
+  const relevantEventData = await extractRelevantDataFromEvent(github.context);
+  core.debug(`Relevant event data: ${JSON.stringify(relevantEventData)}`);
   core.debug("Validating input.");
-  const validationResult = validateInput();
+  const validationResult = validateInput(relevantEventData);
   if (!validationResult.isValid) {
     core.setFailed(`Action input is invalid: ${validationResult.error}`);
     return;
   }
   const { apiKey, deployConfig, qawolfBaseUrl } = validationResult;
   const { attemptNotifyDeploy } = makeQaWolfSdk(
-    { apiKey, serviceBase: qawolfBaseUrl },
+    {
+      apiKey,
+      serviceBase: qawolfBaseUrl,
+      userAgent: `notify-qawolf-on-deploy-action/${version}`,
+    },
     {
       // Replace default log driver with core logging.
       log: coreLogDriver,
     },
   );
   core.info("Attempting to notify QA Wolf of deployment.");
-  const deployResult = await attemptNotifyDeploy({
-    ...deployConfig,
-    hostingService: "GitHub",
-  });
+  const deployResult = await attemptNotifyDeploy(deployConfig);
   if (deployResult.outcome === "aborted") {
     core.setFailed(
       `Failed to reach QA Wolf API with reason "${deployResult.abortReason}" ${
