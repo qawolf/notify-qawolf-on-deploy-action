@@ -20353,7 +20353,7 @@ var require_dist_node8 = __commonJS({
     var import_universal_user_agent = require_dist_node();
     var import_before_after_hook = require_before_after_hook();
     var import_request = require_dist_node5();
-    var import_graphql4 = require_dist_node6();
+    var import_graphql7 = require_dist_node6();
     var import_auth_token = require_dist_node7();
     var VERSION = "5.2.0";
     var noop = () => {
@@ -20432,7 +20432,7 @@ var require_dist_node8 = __commonJS({
           requestDefaults.headers["time-zone"] = options.timeZone;
         }
         this.request = import_request.request.defaults(requestDefaults);
-        this.graphql = (0, import_graphql4.withCustomRequest)(this.request).defaults(requestDefaults);
+        this.graphql = (0, import_graphql7.withCustomRequest)(this.request).defaults(requestDefaults);
         this.log = Object.assign(
           {
             debug: noop,
@@ -27926,10 +27926,40 @@ var defaultLogDriver = {
 var defaultServiceBase = "https://app.qawolf.com/";
 
 // ../ci-sdk/dist/package.json
-var version2 = "0.22.0";
+var version2 = "0.23.0";
 
 // ../ci-sdk/dist/esm/lib/sdk/defaults/userAgent.js
 var defaultUserAgent = `ci-sdk/${version2}`;
+
+// ../ci-sdk/dist/esm/lib/api/log.js
+async function logFetchError({ log, methodName, response }) {
+  if (response.ok)
+    return;
+  const { eventId, failureMessage } = await (async () => {
+    try {
+      const body = await response.json().catch(() => response.text());
+      if (typeof body === "object" && body !== null) {
+        return {
+          eventId: body.eventId,
+          failureMessage: body.failureMessage
+        };
+      }
+      return {
+        eventId: void 0,
+        failureMessage: body
+      };
+    } catch {
+      return {
+        eventId: void 0,
+        failureMessage: void 0
+      };
+    }
+  })();
+  const eventIdSuffix = eventId ? ` (Event ID: ${eventId})` : "";
+  const messageSuffix = failureMessage ? `: ${failureMessage}` : "";
+  const statusText = response.status >= 500 ? "Server Error" : response.statusText || "Unknown Error";
+  log.error(`\u274C [${methodName}] ${response.status} ${statusText}${eventIdSuffix}${messageSuffix}`);
+}
 
 // ../ci-sdk/dist/esm/lib/sdk/domain/attemptDeploy/index.js
 async function attemptNotifyDeploy(deps, apiConfig, config) {
@@ -27972,22 +28002,21 @@ async function attemptNotifyDeploy(deps, apiConfig, config) {
 async function handleErrorResponse(response, log) {
   const status = response.status;
   let abortReason;
-  if (status === void 0) {
+  if (status === void 0)
     abortReason = "network-error";
-    log.error(`\u{1F6AB} Unrecoverable error from deploy_success, aborting. Please contact support.`);
-  } else if (status === 401) {
+  else if (status === 401)
     abortReason = "401-unauthorized";
-    log.error(`\u{1F6AB} Unauthorized error from deploy_success, aborting. Please contact support.`);
-  } else if (status === 403) {
+  else if (status === 403)
     abortReason = "403-forbidden";
-    log.error(`\u{1F6AB} Forbidden error from deploy_success, aborting. Please contact support.`);
-  } else if (status >= 500) {
+  else if (status >= 500)
     abortReason = "5XX-server-error";
-    log.error(`\u{1F6AB} Server error from deploy_success, aborting. Please contact support.`);
-  } else {
+  else
     abortReason = "4XX-client-error";
-    log.error(`\u{1F6AB} Unrecoverable error from deploy_success, aborting. Please contact support.`);
-  }
+  await logFetchError({
+    log,
+    methodName: "attemptNotifyDeploy",
+    response
+  });
   return {
     abortReason,
     httpStatus: status,
@@ -28004,10 +28033,18 @@ async function handleSuccessResponse(data, log) {
   if (results.length === 0) {
     if (isPreviewDeployment) {
       log.info(`\u2705 Deployment notification was successful. No run was created for this deployment.`);
-      return { outcome: "success", runId: void 0 };
+      return {
+        environmentId: environment.id,
+        outcome: "success",
+        runId: void 0
+      };
     }
     log.error(`\u{1F6AB} No trigger matched the request. Please contact support.`);
     return { failReason: "no-matched-trigger", outcome: "failed" };
+  }
+  if (!environment) {
+    log.error(`\u{1F6AB} No environment matched the request. Please contact support.`);
+    return { failReason: "no-environment", outcome: "failed" };
   }
   const failedTrigger = results.find((t) => "failure_reason" in t);
   if (failedTrigger) {
@@ -28017,7 +28054,11 @@ async function handleSuccessResponse(data, log) {
   const duplicateSuite = results.find((t) => "duplicate_suite_id" in t);
   if (duplicateSuite) {
     log.info(`\u2705 Deployment notification was successful. Previous run ID: ${duplicateSuite.duplicate_suite_id} already exists for this deployment.`);
-    return { outcome: "success", runId: duplicateSuite.duplicate_suite_id };
+    return {
+      environmentId: environment.id,
+      outcome: "success",
+      runId: duplicateSuite.duplicate_suite_id
+    };
   }
   const successfulTrigger = results.find((t) => "created_suite_id" in t);
   if (!successfulTrigger) {
@@ -28025,11 +28066,15 @@ async function handleSuccessResponse(data, log) {
     return { failReason: "no-matched-trigger", outcome: "failed" };
   }
   log.info(`\u2705 Deployment notification was successful. Run created with ID: ${successfulTrigger.created_suite_id}`);
-  return { outcome: "success", runId: successfulTrigger.created_suite_id };
+  return {
+    environmentId: environment.id,
+    outcome: "success",
+    runId: successfulTrigger.created_suite_id
+  };
 }
 
 // ../ci-sdk/dist/esm/lib/api/generate-signed-url-for-run-inputs-executables.js
-async function callGenerateSignedUrlForRunInputsExecutablesStorage({ apiKey, serviceBase, userAgent }, { destinationFilePath }, { fetch: localFetch }) {
+async function callGenerateSignedUrlForRunInputsExecutablesStorage({ apiKey, serviceBase, userAgent }, { destinationFilePath }, { fetch: localFetch, log }) {
   try {
     const response = await localFetch(new URL(`${serviceBase}/api/v0/run-inputs-executables-signed-urls?file=${encodeURIComponent(destinationFilePath)}`), {
       headers: {
@@ -28049,6 +28094,11 @@ async function callGenerateSignedUrlForRunInputsExecutablesStorage({ apiKey, ser
         success: true
       };
     }
+    await logFetchError({
+      log,
+      methodName: "callGenerateSignedUrlForRunInputsExecutablesStorage",
+      response
+    });
     return {
       errorMessage: await response.text(),
       httpStatus: response.status,
@@ -28106,7 +28156,7 @@ async function generateSignedUrlForRunInputsExecutablesStorage(deps, apiConfig, 
 }
 
 // ../ci-sdk/dist/esm/lib/api/generate-signed-url-for-team-storage.js
-async function callGenerateSignedUrlForTempTeamStorage({ apiKey, serviceBase, userAgent }, { destinationFilePath }, { fetch: localFetch }) {
+async function callGenerateSignedUrlForTempTeamStorage({ apiKey, serviceBase, userAgent }, { destinationFilePath }, { fetch: localFetch, log }) {
   try {
     const response = await localFetch(new URL(`${serviceBase}/api/v0/team-storage-signed-url?file=${destinationFilePath}`), {
       headers: {
@@ -28126,6 +28176,11 @@ async function callGenerateSignedUrlForTempTeamStorage({ apiKey, serviceBase, us
         success: true
       };
     }
+    await logFetchError({
+      log,
+      methodName: "callGenerateSignedUrlForTempTeamStorage",
+      response
+    });
     return {
       errorMessage: await response.text(),
       httpStatus: response.status,
@@ -28694,7 +28749,7 @@ async function removeEnvironment(deps, apiConfig, config) {
 }
 
 // ../ci-sdk/dist/esm/lib/api/ci-greenlight.js
-async function fetchCiGreenlightStatus({ apiKey, serviceBase, userAgent }, { runId }, { fetch: localFetch }) {
+async function fetchCiGreenlightStatus({ apiKey, serviceBase, userAgent }, { runId }, { fetch: localFetch, log }) {
   try {
     const resp = await localFetch(new URL(`/api/v0/ci-greenlight/${encodeURIComponent(runId)}`, serviceBase), {
       headers: {
@@ -28710,6 +28765,11 @@ async function fetchCiGreenlightStatus({ apiKey, serviceBase, userAgent }, { run
         ok: true
       };
     }
+    await logFetchError({
+      log,
+      methodName: "fetchCiGreenlightStatus",
+      response: resp
+    });
     if (resp.status === 404) {
       return {
         canRetry: true,
@@ -28894,6 +28954,21 @@ var GraphQLBadResponseError = class extends Error {
     this.name = "GraphQLBadResponseError";
   }
 };
+function mapErrorCodeToAbortReason({ errorCode, log }) {
+  switch (errorCode) {
+    case "BAD_USER_INPUT":
+      return "invalid-input";
+    case "FORBIDDEN":
+      return "forbidden";
+    case "INTERNAL":
+      return "server-error";
+    case "UNAUTHENTICATED":
+      return "unauthenticated";
+    default:
+      log.error(`Unknown error code. ${errorCode}`);
+      return "server-error";
+  }
+}
 async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, deps: { fetch: localFetch, log }, name, query: queryGql, variables }) {
   try {
     const response = await localFetch(new URL(`/api/graphql`, serviceBase), {
@@ -28915,15 +28990,14 @@ async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, de
       throw new GraphQLBadResponseError(`[GraphQL] Unexpected response schema. Not valid JSON body.`);
     }
     if ("errors" in rawBody) {
-      const extensionsCodes = rawBody.errors.flatMap((error) => error.extensions?.map?.((ext) => ext.code) ?? []);
       for (const error of rawBody.errors)
         log.warn(`\u274C [GraphQL] error: ${error.message}`);
-      const isUnauthenticated = extensionsCodes.includes("UNAUTHENTICATED");
-      const isForbidden = extensionsCodes.includes("FORBIDDEN");
-      const isInternal = extensionsCodes.includes("INTERNAL");
-      const isBadUserInput = extensionsCodes.includes("BAD_USER_INPUT");
+      const firstError = rawBody.errors[0];
+      const eventId = firstError?.extensions?.eventId;
+      const errorCode = firstError?.extensions?.code;
       return {
-        errorCode: isUnauthenticated ? "unauthenticated" : isForbidden ? "forbidden" : isInternal ? "internal" : isBadUserInput ? "bad-input" : "unknown",
+        abortReason: mapErrorCodeToAbortReason({ errorCode, log }),
+        eventId,
         isGqlError: true
       };
     }
@@ -28941,61 +29015,54 @@ async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, de
     if (e instanceof GraphQLBadResponseError)
       throw e;
     log.error(`\u274C [GraphQL] network error: ${e instanceof Error ? e.message : e}`);
-    return { errorCode: "network-error", isGqlError: true };
+    return {
+      abortReason: "network-error",
+      isGqlError: true
+    };
+  }
+}
+function logGraphQLError({ log, methodName, payload }) {
+  const eventIdSuffix = payload.eventId ? ` (Event ID: ${payload.eventId})` : "";
+  switch (payload.abortReason) {
+    case "forbidden":
+      log.error(`\u274C [${methodName}] Forbidden. Aborting${eventIdSuffix}`);
+      break;
+    case "invalid-input":
+      log.error(`\u274C [${methodName}] Bad GraphQL input. This is a bug. Aborting${eventIdSuffix}`);
+      break;
+    case "network-error":
+      log.error(`\u274C [${methodName}] Network error. Aborting${eventIdSuffix}`);
+      break;
+    case "server-error":
+      log.error(`\u274C [${methodName}] Server error. Aborting${eventIdSuffix}`);
+      break;
+    case "unauthenticated":
+      log.error(`\u274C [${methodName}] Unauthenticated. Aborting${eventIdSuffix}`);
+      break;
+    default:
+      payload.abortReason;
+      log.error(`\u274C [${methodName}] Unknown error. ${payload.abortReason} This is a bug${eventIdSuffix}`);
   }
 }
 
-// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-build-deployed-mutation.js
-var mutationName = "notifyVCSBranchBuildDeployed";
+// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-merge-canceled-mutation.js
+var mutationName = "notifyVCSBranchMergeCanceled";
 var mutationGql = `
-mutation NotifyVCSBranchBuildDeployed(
-  $headVcsCommitId: String!,
-  $baseVcsBranch: String,
-  $headEnvironmentVariablesJson: String!,
-  $baseEnvironmentAlias: String,
-  $headEnvironmentAlias: String!,
-  $concurrencyLimit: Int,
-  $headEnvironmentName: String,
-  $headVcsBranch: String,
-  $headVcsCommitUrl: String,
-  $pullOrMergeRequestNumber: Int
-) {
-    ${mutationName}(
-      headVcsCommitId: $headVcsCommitId,
-      baseVcsBranch: $baseVcsBranch,
-      headEnvironmentVariablesJson: $headEnvironmentVariablesJson,
-      baseEnvironmentAlias: $baseEnvironmentAlias,
-      headEnvironmentAlias: $headEnvironmentAlias,
-      concurrencyLimit: $concurrencyLimit,
-      headEnvironmentName: $headEnvironmentName,
-      headVcsBranch: $headVcsBranch,
-      headVcsCommitUrl: $headVcsCommitUrl,
-      pullOrMergeRequestNumber: $pullOrMergeRequestNumber
-    ) {
+mutation NotifyVCSBranchMergeCanceled($headEnvironmentAlias: String!) {
+  ${mutationName}(headEnvironmentAlias: $headEnvironmentAlias) {
     outcome
-    codeHostingServiceInstallationPlatform
     failureCode
     failureDetails
-    runId
   }
 }`;
-async function callNotifyVCSBranchBuildDeployedMutation(deps, apiConfig, { baseEnvironmentAlias, baseVcsBranch, concurrencyLimit, headEnvironmentAlias, headEnvironmentName, headEnvironmentVariables, headVcsBranch, headVcsCommitId, headVcsCommitUrl, pullOrMergeRequestNumber }) {
+async function callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, { headEnvironmentAlias }) {
   return qawolfGraphql({
     apiConfig,
     deps,
     name: mutationName,
     query: mutationGql,
     variables: {
-      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
-      baseVcsBranch: baseVcsBranch ?? null,
-      concurrencyLimit: concurrencyLimit ?? null,
-      headEnvironmentAlias,
-      headEnvironmentName,
-      headEnvironmentVariablesJson: JSON.stringify(headEnvironmentVariables),
-      headVcsBranch: headVcsBranch ?? null,
-      headVcsCommitId,
-      headVcsCommitUrl: headVcsCommitUrl ?? null,
-      pullOrMergeRequestNumber: pullOrMergeRequestNumber ?? null
+      headEnvironmentAlias
     }
     // The type coercion highlights that we don't have runtime schema validation
   });
@@ -29058,30 +29125,6 @@ function domainFailureToAbortResult({ log, methodName, result }) {
   }
 }
 
-// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/lib/graphql-error.js
-function graphQLErrorToAbortResult({ graphQLPayload, log, methodName }) {
-  switch (graphQLPayload.errorCode) {
-    case "bad-input":
-      log.error(`\u274C [${methodName}] Bad GraphQL input. This is a bug. Aborting.`);
-      return { abortReason: "invalid-input", outcome: "aborted" };
-    case "forbidden":
-      log.error(`\u274C [${methodName}] Forbidden. Aborting.`);
-      return { abortReason: "forbidden", outcome: "aborted" };
-    case "internal":
-    case "unknown":
-      return { abortReason: "server-error", outcome: "aborted" };
-    case "network-error":
-      log.error(`\u274C [${methodName}] Network error. Aborting.`);
-      return { abortReason: "network-error", outcome: "aborted" };
-    case "unauthenticated":
-      log.error(`\u274C [${methodName}] Unauthenticated. Aborting.`);
-      return { abortReason: "unauthenticated", outcome: "aborted" };
-    default:
-      graphQLPayload.errorCode;
-      throw Error("Unreachable code detected. This is a bug.");
-  }
-}
-
 // ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/lib/retry.js
 async function retryWithExponentialBackoff({ log, maxRetries, methodName, retriableAbortReasons, runOnce }) {
   let attemptNumber = 0;
@@ -29101,7 +29144,186 @@ async function retryWithExponentialBackoff({ log, maxRetries, methodName, retria
   } while (true);
 }
 
-// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notify-vcs-branch-build-deployed.js
+// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notify-vcs-branch-merge-canceled.js
+async function runNotifyVCSMergeCanceledOnce(deps, apiConfig, input) {
+  const log = deps.log;
+  const { headEnvironmentAlias } = input;
+  const resp = await callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, {
+    headEnvironmentAlias
+  });
+  if (resp.isGqlError) {
+    logGraphQLError({
+      log,
+      methodName: "notifyVCSBranchMergeCanceled",
+      payload: resp
+    });
+    return {
+      abortReason: resp.abortReason,
+      eventId: resp.eventId,
+      outcome: "aborted"
+    };
+  }
+  const result = resp.responseBody;
+  if (result.outcome === "success") {
+    log.info(`\u2705 [notifyVCSBranchMergeCanceled] Successfully notified the CI system that the merge was canceled.`);
+    return {
+      outcome: "success"
+    };
+  }
+  result.outcome;
+  return domainFailureToAbortResult({
+    log,
+    methodName: "notifyVCSBranchMergeCanceled",
+    result
+  });
+}
+async function notifyVCSBranchMergeCanceled(deps, apiConfig, input) {
+  const { maxRetries = 10 } = input;
+  return retryWithExponentialBackoff({
+    log: deps.log,
+    maxRetries,
+    methodName: "notifyVCSBranchMergeCanceled",
+    retriableAbortReasons: [
+      "network-error",
+      "server-error"
+    ],
+    runOnce: () => runNotifyVCSMergeCanceledOnce(deps, apiConfig, input)
+  });
+}
+
+// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-merge-completed-mutation.js
+var mutationName2 = "notifyVCSBranchMergeCompleted";
+var mutationGql2 = `
+mutation NotifyVCSBranchMergeCompleted($baseEnvironmentAlias: String, $headEnvironmentAlias: String!) {
+${mutationName2}(baseEnvironmentAlias: $baseEnvironmentAlias, headEnvironmentAlias: $headEnvironmentAlias) {
+    outcome
+    failureCode
+    failureDetails
+  }
+}`;
+async function callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, { baseEnvironmentAlias, headEnvironmentAlias }) {
+  return qawolfGraphql({
+    apiConfig,
+    deps,
+    name: mutationName2,
+    query: mutationGql2,
+    variables: {
+      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
+      headEnvironmentAlias
+    }
+    // The type coercion highlights that we don't have runtime schema validation
+  });
+}
+
+// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notify-vcs-branch-merge-completed.js
+async function runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input) {
+  const log = deps.log;
+  const { baseEnvironmentsMapping, baseVcsBranch: vcsBaseBranch } = input;
+  const baseEnvironmentAlias = baseEnvironmentsMapping?.find((mapping) => mapping.vcsBranch === vcsBaseBranch)?.environmentAlias;
+  if (baseEnvironmentAlias === void 0) {
+    log.info(`\u2139\uFE0F [notifyVCSBranchMergeCompleted] Could not find a base environment for VCS branch '${vcsBaseBranch}'. Fall back to use the default base environment`);
+  }
+  const resp = await callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, {
+    baseEnvironmentAlias,
+    headEnvironmentAlias: input.headEnvironmentAlias
+  });
+  if (resp.isGqlError) {
+    logGraphQLError({
+      log,
+      methodName: "notifyVCSBranchMergeCompleted",
+      payload: resp
+    });
+    return {
+      abortReason: resp.abortReason,
+      eventId: resp.eventId,
+      outcome: "aborted"
+    };
+  }
+  const result = resp.responseBody;
+  if (result.outcome === "success") {
+    log.info(`\u2705 [notifyVCSBranchMergeCompleted] Successfully notified the CI system that the merge was completed.`);
+    return {
+      outcome: "success"
+    };
+  }
+  result.outcome;
+  return domainFailureToAbortResult({
+    log,
+    methodName: "notifyVCSBranchMergeCompleted",
+    result
+  });
+}
+async function notifyVCSBranchMergeCompleted(deps, apiConfig, input) {
+  const { maxRetries = 10 } = input;
+  return retryWithExponentialBackoff({
+    log: deps.log,
+    maxRetries,
+    methodName: "notifyVCSBranchMergeCompleted",
+    retriableAbortReasons: [
+      "network-error",
+      "server-error"
+    ],
+    runOnce: () => runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input)
+  });
+}
+
+// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-build-deployed-mutation.js
+var mutationName3 = "notifyVCSBranchBuildDeployed";
+var mutationGql3 = `
+mutation NotifyVCSBranchBuildDeployed(
+  $headVcsCommitId: String!,
+  $baseVcsBranch: String,
+  $headEnvironmentVariablesJson: String!,
+  $baseEnvironmentAlias: String,
+  $headEnvironmentAlias: String!,
+  $concurrencyLimit: Int,
+  $headEnvironmentName: String,
+  $headVcsBranch: String,
+  $headVcsCommitUrl: String,
+  $pullOrMergeRequestNumber: Int
+) {
+    ${mutationName3}(
+      headVcsCommitId: $headVcsCommitId,
+      baseVcsBranch: $baseVcsBranch,
+      headEnvironmentVariablesJson: $headEnvironmentVariablesJson,
+      baseEnvironmentAlias: $baseEnvironmentAlias,
+      headEnvironmentAlias: $headEnvironmentAlias,
+      concurrencyLimit: $concurrencyLimit,
+      headEnvironmentName: $headEnvironmentName,
+      headVcsBranch: $headVcsBranch,
+      headVcsCommitUrl: $headVcsCommitUrl,
+      pullOrMergeRequestNumber: $pullOrMergeRequestNumber
+    ) {
+    outcome
+    codeHostingServiceInstallationPlatform
+    failureCode
+    failureDetails
+    runId
+  }
+}`;
+async function callNotifyVCSBranchBuildDeployedMutation(deps, apiConfig, { baseEnvironmentAlias, baseVcsBranch, concurrencyLimit, headEnvironmentAlias, headEnvironmentName, headEnvironmentVariables, headVcsBranch, headVcsCommitId, headVcsCommitUrl, pullOrMergeRequestNumber }) {
+  return qawolfGraphql({
+    apiConfig,
+    deps,
+    name: mutationName3,
+    query: mutationGql3,
+    variables: {
+      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
+      baseVcsBranch: baseVcsBranch ?? null,
+      concurrencyLimit: concurrencyLimit ?? null,
+      headEnvironmentAlias,
+      headEnvironmentName,
+      headEnvironmentVariablesJson: JSON.stringify(headEnvironmentVariables),
+      headVcsBranch: headVcsBranch ?? null,
+      headVcsCommitId,
+      headVcsCommitUrl: headVcsCommitUrl ?? null,
+      pullOrMergeRequestNumber: pullOrMergeRequestNumber ?? null
+    }
+    // The type coercion highlights that we don't have runtime schema validation
+  });
+}
+
+// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notifyVCSBranchBuildDeployed/index.js
 async function runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input) {
   const { baseEnvironmentsMapping, baseVcsBranch, concurrencyLimit, headEnvironmentAlias, headEnvironmentName, headEnvironmentVariables, headVcsBranch, headVcsCommitId, headVcsCommitUrl, pullOrMergeRequestNumber } = input;
   const log = deps.log;
@@ -29138,11 +29360,16 @@ async function runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input) {
     pullOrMergeRequestNumber
   });
   if (resp.isGqlError) {
-    return graphQLErrorToAbortResult({
-      graphQLPayload: resp,
+    logGraphQLError({
       log,
-      methodName: "notifyVCSBranchBuildDeployed"
+      methodName: "notifyVCSBranchBuildDeployed",
+      payload: resp
     });
+    return {
+      abortReason: resp.abortReason,
+      eventId: resp.eventId,
+      outcome: "aborted"
+    };
   }
   const result = resp.responseBody;
   if (result.outcome === "success") {
@@ -29173,142 +29400,6 @@ async function notifyVCSBranchBuildDeployed(deps, apiConfig, input) {
       "run-creation-failed"
     ],
     runOnce: () => runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input)
-  });
-}
-
-// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-merge-canceled-mutation.js
-var mutationName2 = "notifyVCSBranchMergeCanceled";
-var mutationGql2 = `
-mutation NotifyVCSBranchMergeCanceled($headEnvironmentAlias: String!) {
-  ${mutationName2}(headEnvironmentAlias: $headEnvironmentAlias) {
-    outcome
-    failureCode
-    failureDetails
-  }
-}`;
-async function callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, { headEnvironmentAlias }) {
-  return qawolfGraphql({
-    apiConfig,
-    deps,
-    name: mutationName2,
-    query: mutationGql2,
-    variables: {
-      headEnvironmentAlias
-    }
-    // The type coercion highlights that we don't have runtime schema validation
-  });
-}
-
-// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notify-vcs-branch-merge-canceled.js
-async function runNotifyVCSMergeCanceledOnce(deps, apiConfig, input) {
-  const log = deps.log;
-  const { headEnvironmentAlias } = input;
-  const resp = await callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, {
-    headEnvironmentAlias
-  });
-  if (resp.isGqlError) {
-    return graphQLErrorToAbortResult({
-      graphQLPayload: resp,
-      log,
-      methodName: "notifyVCSBranchMergeCanceled"
-    });
-  }
-  const result = resp.responseBody;
-  if (result.outcome === "success") {
-    log.info(`\u2705 [notifyVCSBranchMergeCanceled] Successfully notified the CI system that the merge was canceled.`);
-    return {
-      outcome: "success"
-    };
-  }
-  result.outcome;
-  return domainFailureToAbortResult({
-    log,
-    methodName: "notifyVCSBranchMergeCanceled",
-    result
-  });
-}
-async function notifyVCSBranchMergeCanceled(deps, apiConfig, input) {
-  const { maxRetries = 10 } = input;
-  return retryWithExponentialBackoff({
-    log: deps.log,
-    maxRetries,
-    methodName: "notifyVCSBranchMergeCanceled",
-    retriableAbortReasons: [
-      "network-error",
-      "server-error"
-    ],
-    runOnce: () => runNotifyVCSMergeCanceledOnce(deps, apiConfig, input)
-  });
-}
-
-// ../ci-sdk/dist/esm/lib/api/notify-vcs-branch-merge-completed-mutation.js
-var mutationName3 = "notifyVCSBranchMergeCompleted";
-var mutationGql3 = `
-mutation NotifyVCSBranchMergeCompleted($baseEnvironmentAlias: String, $headEnvironmentAlias: String!) {
-${mutationName3}(baseEnvironmentAlias: $baseEnvironmentAlias, headEnvironmentAlias: $headEnvironmentAlias) {
-    outcome
-    failureCode
-    failureDetails
-  }
-}`;
-async function callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, { baseEnvironmentAlias, headEnvironmentAlias }) {
-  return qawolfGraphql({
-    apiConfig,
-    deps,
-    name: mutationName3,
-    query: mutationGql3,
-    variables: {
-      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
-      headEnvironmentAlias
-    }
-    // The type coercion highlights that we don't have runtime schema validation
-  });
-}
-
-// ../ci-sdk/dist/esm/lib/sdk/domain/vcsBranchTesting/notify-vcs-branch-merge-completed.js
-async function runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input) {
-  const log = deps.log;
-  const { baseEnvironmentsMapping, baseVcsBranch: vcsBaseBranch } = input;
-  const baseEnvironmentAlias = baseEnvironmentsMapping?.find((mapping) => mapping.vcsBranch === vcsBaseBranch)?.environmentAlias;
-  if (baseEnvironmentAlias === void 0) {
-    log.info(`\u2139\uFE0F [notifyVCSBranchMergeCompleted] Could not find a base environment for VCS branch '${vcsBaseBranch}'. Fall back to use the default base environment`);
-  }
-  const resp = await callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, {
-    baseEnvironmentAlias,
-    headEnvironmentAlias: input.headEnvironmentAlias
-  });
-  if (resp.isGqlError) {
-    return graphQLErrorToAbortResult({
-      graphQLPayload: resp,
-      log,
-      methodName: "notifyVCSBranchMergeCompleted"
-    });
-  }
-  const result = resp.responseBody;
-  if (result.outcome === "success") {
-    log.info(`\u2705 [notifyVCSBranchMergeCompleted] Successfully notified the CI system that the merge was completed.`);
-    return {
-      outcome: "success"
-    };
-  }
-  result.outcome;
-  return domainFailureToAbortResult({
-    log,
-    methodName: "notifyVCSBranchMergeCompleted",
-    result
-  });
-}
-async function notifyVCSBranchMergeCompleted(deps, apiConfig, input) {
-  const { maxRetries = 10 } = input;
-  return retryWithExponentialBackoff({
-    log: deps.log,
-    maxRetries,
-    methodName: "notifyVCSBranchMergeCompleted",
-    retriableAbortReasons: [
-      "network-error",
-      "server-error"
-    ],
-    runOnce: () => runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input)
   });
 }
 
@@ -29359,7 +29450,7 @@ We recommend 'undici' package for that purpose. See the Requirement section of o
 var import_ci_utils2 = __toESM(require_dist());
 
 // package.json
-var version3 = "v1.0.4";
+var version3 = "v1.1.0";
 
 // src/extractRelevantDataFromEvent/index.ts
 var core = __toESM(require_core());
@@ -33544,7 +33635,8 @@ async function runGitHubAction() {
     );
     return;
   }
-  const { runId } = deployResult;
+  const { environmentId, runId } = deployResult;
+  core3.setOutput("environment-id", environmentId);
   core3.setOutput("run-id", runId);
 }
 runGitHubAction().catch((error) => {

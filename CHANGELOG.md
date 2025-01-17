@@ -1,3 +1,8 @@
+## v1.1.0
+
+- Expose an `eventId` on errors
+- Output the `environmentId` on `attemptNotifyDeploy`
+
 ## v1.0.4
 
 - Extract information from Github Event and send it to `attemptNotifyDeploy`
