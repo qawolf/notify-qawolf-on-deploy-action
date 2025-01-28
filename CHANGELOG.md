@@ -1,3 +1,7 @@
+## v1.1.1
+
+- Improve logging to facilitate debugging
+
 ## v1.1.0
 
 - Expose an `eventId` on errors

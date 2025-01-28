@@ -1,6 +1,6 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.1.0",
+  "version": "v1.1.1",
   "type": "commonjs",
   "main": "dist/index.js",
   "engines": {

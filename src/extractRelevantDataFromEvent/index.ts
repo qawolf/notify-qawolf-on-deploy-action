@@ -114,7 +114,10 @@ async function fetchPullRequestData(
   | "fail-to-fetch-pull-request-data"
   | "missing-github-token"
 > {
-  if (!process.env.GITHUB_TOKEN) return "missing-github-token";
+  if (!process.env.GITHUB_TOKEN) {
+    core.info("GITHUB_TOKEN is missing, skipping pull request data extraction");
+    return "missing-github-token";
+  }
 
   const { context } = github;
   const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
@@ -130,7 +133,12 @@ async function fetchPullRequestData(
       (item) => item.pull_request && item.state === "open",
     );
 
-    if (!sortedOpenPullRequests.length) return "no-pull-request";
+    if (!sortedOpenPullRequests.length) {
+      core.info(
+        `No open pull requests found for sha = ${sha}. This is only an issue if you're running this action on a PR.`,
+      );
+      return "no-pull-request";
+    }
 
     // Fetch all PR details in parallel
     const pullRequestDetails = await Promise.all(
