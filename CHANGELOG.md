@@ -1,3 +1,7 @@
+## v1.1.2
+
+- Correct code sample in README where `GITHUB_TOKEN` is being passed as a `secrets` instead of an `env`
+
 ## v1.1.1
 
 - Improve logging to facilitate debugging

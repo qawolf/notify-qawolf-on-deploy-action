@@ -28738,7 +28738,7 @@ var jsonEnvironmentsMappingSchema = z.string().transform((str, ctx) => {
 }).pipe(environmentsMappingSchema);
 
 // package.json
-var version3 = "v1.1.1";
+var version3 = "v1.1.2";
 
 // src/extractRelevantDataFromEvent/index.ts
 var core = __toESM(require_core());

@@ -153,15 +153,14 @@ jobs:
         # Only notify QA Wolf if the deployment was successful
         if: ${{ github.event.deployment_status.state  == 'success' }}
         uses: qawolf/notify-qawolf-on-deploy-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
           # Note that target_url is "The optional link added to the status.".
           # If your vendor is not setting the target_url, this action will not work.
           # You can either contact your vendor or try to compose the URL by following your vendor documentation.
           deployment-url: ${{ github.event.deployment_status.target_url }}
-        secrets:
-          # Required if trigger action is `deployment_status`
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Reading the output from a subsequent job (optional)
