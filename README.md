@@ -100,6 +100,8 @@ jobs:
           qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
           # This URL should be captured in the deployment step.
           deployment-url: ${{ needs.deploy-environment.outputs.deployment-url || "https://static-url.com" }}
+          # Unique deployment type defined together with the support team
+          deployment-type: staging
 ```
 
 ### Trigger action on `pull_request` events
@@ -133,6 +135,7 @@ jobs:
         with:
           qawolf-api-key: "${{ secrets.QAWOLF_API_KEY }}"
           deployment-url: ${{ needs.deploy-preview-environment.outputs.deployment-url }}
+          deployment-type: staging
 ```
 
 ### Trigger action on `deployment_status` events
@@ -161,6 +164,7 @@ jobs:
           # If your vendor is not setting the target_url, this action will not work.
           # You can either contact your vendor or try to compose the URL by following your vendor documentation.
           deployment-url: ${{ github.event.deployment_status.target_url }}
+          deployment-type: staging
 ```
 
 ### Reading the output from a subsequent job (optional)
