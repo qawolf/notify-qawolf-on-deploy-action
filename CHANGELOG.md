@@ -1,3 +1,11 @@
+## v1.1.4
+
+- Fix a problem where the `sha` passed in via `merge_group` events was wrong, causing commit checks to never complete
+
+## v1.1.3
+
+- Update README.md to include `deployment_type` examples
+
 ## v1.1.2
 
 - Correct code sample in README where `GITHUB_TOKEN` is being passed as a `secrets` instead of an `env`

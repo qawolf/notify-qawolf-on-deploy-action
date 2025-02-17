@@ -7,6 +7,8 @@ import {
   type PushEvent,
 } from "@octokit/webhooks-types";
 
+import { fetchPullRequestDataFromMergeGroupRef } from "./fetchPullRequestDataFromMergeGroupRef";
+
 export type RelevantEventData = {
   branch?: string;
   commitUrl?: string;
@@ -71,21 +73,18 @@ export const extractRelevantDataFromMergeGroup = async (
   context: typeof github.context,
 ): Promise<RelevantEventData> => {
   const mergeGroup = context.payload as MergeGroupEvent;
-  const pullRequestData = await fetchPullRequestData(
-    mergeGroup.merge_group.base_sha,
+  const pullRequestData = await fetchPullRequestDataFromMergeGroupRef(
+    mergeGroup.merge_group.head_ref,
   );
   if (typeof pullRequestData === "string") {
     core.info(
-      `Unable to get pull request info from deployment: ${pullRequestData}`,
+      `Unable to get pull request info for merge group: ${pullRequestData}`,
     );
   }
   return {
+    branch: mergeGroup.merge_group.head_ref.replace("refs/heads/", ""),
+    sha: mergeGroup.merge_group.head_sha,
     ...(typeof pullRequestData === "object" ? pullRequestData : {}),
-    // Use the merge group's base branch/SHA
-    // instead of merge queue's temporary values (head_ref/head_sha)
-    // This ensures we track the actual PR target branch being merged
-    branch: mergeGroup.merge_group.base_ref.replace("refs/heads/", ""),
-    sha: mergeGroup.merge_group.base_sha,
   };
 };
 

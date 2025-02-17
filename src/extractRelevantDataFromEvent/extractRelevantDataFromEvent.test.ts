@@ -89,18 +89,38 @@ describe("extractRelevantDataFromEvent", () => {
     github.context.payload = {
       ...mockPayload,
       merge_group: {
-        base_ref: "refs/heads/merge-group-base-branch",
+        base_ref: "refs/heads/main",
         base_sha: "base-sha",
-        head_ref: "refs/heads/merge-group-head-branch",
+        head_ref: "refs/heads/gh-readonly-queue/main/pr-9531-base-sha",
         head_sha: mockPullRequest.head.sha,
       },
     };
 
+    const mockOctokit = {
+      rest: {
+        pulls: {
+          get: jest.fn().mockResolvedValue({
+            data: mockPullRequest,
+          }),
+        },
+        search: {
+          issuesAndPullRequests: jest.fn().mockResolvedValue({
+            data: {
+              items: [{ ...mockPullRequest }],
+            },
+          }),
+        },
+      },
+    };
+
+    (github.getOctokit as jest.Mock).mockReturnValue(mockOctokit);
+
     const result = await extractRelevantDataFromEvent(github.context);
 
     expect(result).toEqual({
-      branch: "merge-group-base-branch",
-      sha: "base-sha",
+      branch: "feature-branch",
+      pullRequestNumber: 9531,
+      sha: "test-sha",
     });
   });
 

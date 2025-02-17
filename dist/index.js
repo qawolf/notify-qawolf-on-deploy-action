@@ -70,14 +70,12 @@ var require_command = __commonJS({
   "../../node_modules/@actions/core/lib/command.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -86,13 +84,10 @@ var require_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -505,14 +500,12 @@ var require_file_command = __commonJS({
   "../../node_modules/@actions/core/lib/file-command.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -521,13 +514,10 @@ var require_file_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1363,8 +1353,7 @@ var require_util = __commonJS({
         return host.substring(1, idx2);
       }
       const idx = host.indexOf(":");
-      if (idx === -1)
-        return host;
+      if (idx === -1) return host;
       return host.substring(0, idx);
     }
     function getServerName(host) {
@@ -1434,8 +1423,7 @@ var require_util = __commonJS({
       return headerNameLowerCasedRecord[value] || value.toLowerCase();
     }
     function parseHeaders(headers, obj = {}) {
-      if (!Array.isArray(headers))
-        return headers;
+      if (!Array.isArray(headers)) return headers;
       for (let i = 0; i < headers.length; i += 2) {
         const key = headers[i].toString().toLowerCase();
         let val = obj[key];
@@ -1609,8 +1597,7 @@ var require_util = __commonJS({
       return `${val}`;
     }
     function parseRangeHeader(range) {
-      if (range == null || range === "")
-        return { start: 0, end: null, size: null };
+      if (range == null || range === "") return { start: 0, end: null, size: null };
       const m = range ? range.match(/^bytes (\d+)-(\d+)\/(\d+)?$/) : null;
       return m ? {
         start: parseInt(m[1]),
@@ -2269,6 +2256,7 @@ var require_decodeText = __commonJS({
             return decoders.utf8;
           case "latin1":
           case "ascii":
+          // TODO: Make these a separate, strict decoder?
           case "us-ascii":
           case "iso-8859-1":
           case "iso8859-1":
@@ -2968,6 +2956,7 @@ var require_basename = __commonJS({
       for (var i = path.length - 1; i >= 0; --i) {
         switch (path.charCodeAt(i)) {
           case 47:
+          // '/'
           case 92:
             path = path.slice(i + 1);
             return path === ".." || path === "." ? "" : path;
@@ -4202,7 +4191,21 @@ var require_util2 = __commonJS({
           return referrerOrigin;
         }
         case "strict-origin":
+        // eslint-disable-line
+        /**
+           * 1. If referrerURL is a potentially trustworthy URL and
+           * request’s current URL is not a potentially trustworthy URL,
+           * then return no referrer.
+           * 2. Return referrerOrigin
+          */
         case "no-referrer-when-downgrade":
+        // eslint-disable-line
+        /**
+         * 1. If referrerURL is a potentially trustworthy URL and
+         * request’s current URL is not a potentially trustworthy URL,
+         * then return no referrer.
+         * 2. Return referrerOrigin
+        */
         default:
           return isNonPotentiallyTrustWorthy ? "no-referrer" : referrerOrigin;
       }
@@ -4228,14 +4231,11 @@ var require_util2 = __commonJS({
       if (url.href === "about:blank" || url.href === "about:srcdoc") {
         return true;
       }
-      if (url.protocol === "data:")
-        return true;
-      if (url.protocol === "file:")
-        return true;
+      if (url.protocol === "data:") return true;
+      if (url.protocol === "file:") return true;
       return isOriginPotentiallyTrustworthy(url.origin);
       function isOriginPotentiallyTrustworthy(origin) {
-        if (origin == null || origin === "null")
-          return false;
+        if (origin == null || origin === "null") return false;
         const originAsURL = new URL(origin);
         if (originAsURL.protocol === "https:" || originAsURL.protocol === "wss:") {
           return true;
@@ -5206,12 +5206,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--)
-          ;
+        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--) ;
       }
       return str.slice(lead, trail + 1);
     }
@@ -5222,12 +5220,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++)
-          ;
+        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--)
-          ;
+        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--) ;
       }
       return str.slice(lead, trail + 1);
     }
@@ -5821,8 +5817,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
           const contentType = this.headers.get("Content-Type");
           if (/multipart\/form-data/.test(contentType)) {
             const headers = {};
-            for (const [key, value] of this.headers)
-              headers[key.toLowerCase()] = value;
+            for (const [key, value] of this.headers) headers[key.toLowerCase()] = value;
             const responseFormData = new FormData();
             let busboy;
             try {
@@ -5863,9 +5858,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
               busboy.on("finish", resolve);
               busboy.on("error", (err) => reject(new TypeError(err)));
             });
-            if (this.body !== null)
-              for await (const chunk of consumeBody(this[kState].body))
-                busboy.write(chunk);
+            if (this.body !== null) for await (const chunk of consumeBody(this[kState].body)) busboy.write(chunk);
             busboy.end();
             await busboyResolve;
             return responseFormData;
@@ -6255,12 +6248,9 @@ var require_request = __commonJS({
         const headers = {};
         for (const header of rawHeaders) {
           const [key, value] = header.split(": ");
-          if (value == null || value.length === 0)
-            continue;
-          if (headers[key])
-            headers[key] += `,${value}`;
-          else
-            headers[key] = value;
+          if (value == null || value.length === 0) continue;
+          if (headers[key]) headers[key] += `,${value}`;
+          else headers[key] = value;
         }
         return headers;
       }
@@ -6294,10 +6284,8 @@ var require_request = __commonJS({
         }
       } else if (request.contentType === null && key.length === 12 && key.toLowerCase() === "content-type") {
         request.contentType = val;
-        if (skipAppend)
-          request.headers[key] = processHeaderValue(key, val, skipAppend);
-        else
-          request.headers += processHeaderValue(key, val);
+        if (skipAppend) request.headers[key] = processHeaderValue(key, val, skipAppend);
+        else request.headers += processHeaderValue(key, val);
       } else if (key.length === 17 && key.toLowerCase() === "transfer-encoding") {
         throw new InvalidArgumentError("invalid transfer-encoding header");
       } else if (key.length === 10 && key.toLowerCase() === "connection") {
@@ -6319,19 +6307,15 @@ var require_request = __commonJS({
         if (Array.isArray(val)) {
           for (let i = 0; i < val.length; i++) {
             if (skipAppend) {
-              if (request.headers[key])
-                request.headers[key] += `,${processHeaderValue(key, val[i], skipAppend)}`;
-              else
-                request.headers[key] = processHeaderValue(key, val[i], skipAppend);
+              if (request.headers[key]) request.headers[key] += `,${processHeaderValue(key, val[i], skipAppend)}`;
+              else request.headers[key] = processHeaderValue(key, val[i], skipAppend);
             } else {
               request.headers += processHeaderValue(key, val[i]);
             }
           }
         } else {
-          if (skipAppend)
-            request.headers[key] = processHeaderValue(key, val, skipAppend);
-          else
-            request.headers += processHeaderValue(key, val);
+          if (skipAppend) request.headers[key] = processHeaderValue(key, val, skipAppend);
+          else request.headers += processHeaderValue(key, val);
         }
       }
     }
@@ -8450,10 +8434,8 @@ upgrade: ${upgrade}\r
     function writeH2(client, session, request) {
       const { body, method, path, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let headers;
-      if (typeof reqHeaders === "string")
-        headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
-      else
-        headers = reqHeaders;
+      if (typeof reqHeaders === "string") headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
+      else headers = reqHeaders;
       if (upgrade) {
         errorRequest(client, request, new Error("Upgrade not supported for H2"));
         return false;
@@ -8489,8 +8471,7 @@ upgrade: ${upgrade}\r
         }
         stream.once("close", () => {
           h2State.openStreams -= 1;
-          if (h2State.openStreams === 0)
-            session.unref();
+          if (h2State.openStreams === 0) session.unref();
         });
         return true;
       }
@@ -9272,8 +9253,7 @@ var require_balanced_pool = __commonJS({
     var kMaxWeightPerServer = Symbol("kMaxWeightPerServer");
     var kErrorPenalty = Symbol("kErrorPenalty");
     function getGreatestCommonDivisor(a, b) {
-      if (b === 0)
-        return a;
+      if (b === 0) return a;
       return getGreatestCommonDivisor(b, a % b);
     }
     function defaultFactory(origin, opts) {
@@ -11648,8 +11628,7 @@ var require_RetryHandler = __commonJS({
         }
       }
       onBodySent(chunk) {
-        if (this.handler.onBodySent)
-          return this.handler.onBodySent(chunk);
+        if (this.handler.onBodySent) return this.handler.onBodySent(chunk);
       }
       static [kRetryHandlerDefaultRetry](err, { state, opts }, cb) {
         const { statusCode, code, headers } = err;
@@ -11912,10 +11891,8 @@ var require_headers = __commonJS({
     function headerValueNormalize(potentialValue) {
       let i = 0;
       let j = potentialValue.length;
-      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1)))
-        --j;
-      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i)))
-        ++i;
+      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1))) --j;
+      while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i))) ++i;
       return i === 0 && j === potentialValue.length ? potentialValue : potentialValue.substring(i, j);
     }
     function fill(headers, object) {
@@ -15230,8 +15207,7 @@ var require_cache = __commonJS({
       }
       async matchAll(request = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request !== void 0)
-          request = webidl.converters.RequestInfo(request);
+        if (request !== void 0) request = webidl.converters.RequestInfo(request);
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
@@ -15500,8 +15476,7 @@ var require_cache = __commonJS({
        */
       async keys(request = void 0, options = {}) {
         webidl.brandCheck(this, _Cache);
-        if (request !== void 0)
-          request = webidl.converters.RequestInfo(request);
+        if (request !== void 0) request = webidl.converters.RequestInfo(request);
         options = webidl.converters.CacheQueryOptions(options);
         let r = null;
         if (request !== void 0) {
@@ -17653,8 +17628,7 @@ var require_lib = __commonJS({
   "../../node_modules/@actions/http-client/lib/index.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -17663,8 +17637,7 @@ var require_lib = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -17673,13 +17646,10 @@ var require_lib = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -17950,12 +17920,12 @@ var require_lib = __commonJS({
             throw new Error("Client has already been disposed.");
           }
           const parsedUrl = new URL(requestUrl);
-          let info4 = this._prepareRequest(verb, parsedUrl, headers);
+          let info5 = this._prepareRequest(verb, parsedUrl, headers);
           const maxTries = this._allowRetries && RetryableHttpVerbs.includes(verb) ? this._maxRetries + 1 : 1;
           let numTries = 0;
           let response;
           do {
-            response = yield this.requestRaw(info4, data);
+            response = yield this.requestRaw(info5, data);
             if (response && response.message && response.message.statusCode === HttpCodes.Unauthorized) {
               let authenticationHandler;
               for (const handler of this.handlers) {
@@ -17965,7 +17935,7 @@ var require_lib = __commonJS({
                 }
               }
               if (authenticationHandler) {
-                return authenticationHandler.handleAuthentication(this, info4, data);
+                return authenticationHandler.handleAuthentication(this, info5, data);
               } else {
                 return response;
               }
@@ -17988,8 +17958,8 @@ var require_lib = __commonJS({
                   }
                 }
               }
-              info4 = this._prepareRequest(verb, parsedRedirectUrl, headers);
-              response = yield this.requestRaw(info4, data);
+              info5 = this._prepareRequest(verb, parsedRedirectUrl, headers);
+              response = yield this.requestRaw(info5, data);
               redirectsRemaining--;
             }
             if (!response.message.statusCode || !HttpResponseRetryCodes.includes(response.message.statusCode)) {
@@ -18018,7 +17988,7 @@ var require_lib = __commonJS({
        * @param info
        * @param data
        */
-      requestRaw(info4, data) {
+      requestRaw(info5, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
             function callbackForResult(err, res) {
@@ -18030,7 +18000,7 @@ var require_lib = __commonJS({
                 resolve(res);
               }
             }
-            this.requestRawWithCallback(info4, data, callbackForResult);
+            this.requestRawWithCallback(info5, data, callbackForResult);
           });
         });
       }
@@ -18040,12 +18010,12 @@ var require_lib = __commonJS({
        * @param data
        * @param onResult
        */
-      requestRawWithCallback(info4, data, onResult) {
+      requestRawWithCallback(info5, data, onResult) {
         if (typeof data === "string") {
-          if (!info4.options.headers) {
-            info4.options.headers = {};
+          if (!info5.options.headers) {
+            info5.options.headers = {};
           }
-          info4.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
+          info5.options.headers["Content-Length"] = Buffer.byteLength(data, "utf8");
         }
         let callbackCalled = false;
         function handleResult2(err, res) {
@@ -18054,7 +18024,7 @@ var require_lib = __commonJS({
             onResult(err, res);
           }
         }
-        const req = info4.httpModule.request(info4.options, (msg) => {
+        const req = info5.httpModule.request(info5.options, (msg) => {
           const res = new HttpClientResponse(msg);
           handleResult2(void 0, res);
         });
@@ -18066,7 +18036,7 @@ var require_lib = __commonJS({
           if (socket) {
             socket.end();
           }
-          handleResult2(new Error(`Request timeout: ${info4.options.path}`));
+          handleResult2(new Error(`Request timeout: ${info5.options.path}`));
         });
         req.on("error", function(err) {
           handleResult2(err);
@@ -18102,27 +18072,27 @@ var require_lib = __commonJS({
         return this._getProxyAgentDispatcher(parsedUrl, proxyUrl);
       }
       _prepareRequest(method, requestUrl, headers) {
-        const info4 = {};
-        info4.parsedUrl = requestUrl;
-        const usingSsl = info4.parsedUrl.protocol === "https:";
-        info4.httpModule = usingSsl ? https : http;
+        const info5 = {};
+        info5.parsedUrl = requestUrl;
+        const usingSsl = info5.parsedUrl.protocol === "https:";
+        info5.httpModule = usingSsl ? https : http;
         const defaultPort = usingSsl ? 443 : 80;
-        info4.options = {};
-        info4.options.host = info4.parsedUrl.hostname;
-        info4.options.port = info4.parsedUrl.port ? parseInt(info4.parsedUrl.port) : defaultPort;
-        info4.options.path = (info4.parsedUrl.pathname || "") + (info4.parsedUrl.search || "");
-        info4.options.method = method;
-        info4.options.headers = this._mergeHeaders(headers);
+        info5.options = {};
+        info5.options.host = info5.parsedUrl.hostname;
+        info5.options.port = info5.parsedUrl.port ? parseInt(info5.parsedUrl.port) : defaultPort;
+        info5.options.path = (info5.parsedUrl.pathname || "") + (info5.parsedUrl.search || "");
+        info5.options.method = method;
+        info5.options.headers = this._mergeHeaders(headers);
         if (this.userAgent != null) {
-          info4.options.headers["user-agent"] = this.userAgent;
+          info5.options.headers["user-agent"] = this.userAgent;
         }
-        info4.options.agent = this._getAgent(info4.parsedUrl);
+        info5.options.agent = this._getAgent(info5.parsedUrl);
         if (this.handlers) {
           for (const handler of this.handlers) {
-            handler.prepareRequest(info4.options);
+            handler.prepareRequest(info5.options);
           }
         }
-        return info4;
+        return info5;
       }
       _mergeHeaders(headers) {
         if (this.requestOptions && this.requestOptions.headers) {
@@ -18773,14 +18743,12 @@ var require_path_utils = __commonJS({
   "../../node_modules/@actions/core/lib/path-utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -18789,13 +18757,10 @@ var require_path_utils = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -18823,14 +18788,12 @@ var require_core = __commonJS({
   "../../node_modules/@actions/core/lib/core.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -18839,13 +18802,10 @@ var require_core = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -18983,10 +18943,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.notice = notice;
-    function info4(message) {
+    function info5(message) {
       process.stdout.write(message + os.EOL);
     }
-    exports2.info = info4;
+    exports2.info = info5;
     function startGroup(name) {
       command_1.issue("group", name);
     }
@@ -19110,8 +19070,7 @@ var require_utils3 = __commonJS({
   "../../node_modules/@actions/github/lib/internal/utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -19120,8 +19079,7 @@ var require_utils3 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -19130,13 +19088,10 @@ var require_utils3 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -19741,8 +19696,7 @@ var require_wrappy = __commonJS({
     "use strict";
     module2.exports = wrappy;
     function wrappy(fn, cb) {
-      if (fn && cb)
-        return wrappy(fn)(cb);
+      if (fn && cb) return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
       Object.keys(fn).forEach(function(k) {
@@ -19790,8 +19744,7 @@ var require_once = __commonJS({
     });
     function once(fn) {
       var f = function() {
-        if (f.called)
-          return f.value;
+        if (f.called) return f.value;
         f.called = true;
         return f.value = fn.apply(this, arguments);
       };
@@ -23023,8 +22976,7 @@ var require_utils4 = __commonJS({
   "../../node_modules/@actions/github/lib/utils.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -23033,8 +22985,7 @@ var require_utils4 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -23043,13 +22994,10 @@ var require_utils4 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -23088,8 +23036,7 @@ var require_github = __commonJS({
   "../../node_modules/@actions/github/lib/github.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -23098,8 +23045,7 @@ var require_github = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
@@ -23108,13 +23054,10 @@ var require_github = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -23124,11 +23067,11 @@ var require_github = __commonJS({
     var Context = __importStar(require_context());
     var utils_1 = require_utils4();
     exports2.context = new Context.Context();
-    function getOctokit2(token, options, ...additionalPlugins) {
+    function getOctokit3(token, options, ...additionalPlugins) {
       const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
       return new GitHubWithPlugins((0, utils_1.getOctokitOptions)(token, options));
     }
-    exports2.getOctokit = getOctokit2;
+    exports2.getOctokit = getOctokit3;
   }
 });
 
@@ -23158,12 +23101,9 @@ var require_slugify = __commonJS({
         var trim = options.trim === void 0 ? true : options.trim;
         var slug = string.normalize().split("").reduce(function(result, ch) {
           var appendChar = locale[ch];
-          if (appendChar === void 0)
-            appendChar = charMap[ch];
-          if (appendChar === void 0)
-            appendChar = ch;
-          if (appendChar === replacement)
-            appendChar = " ";
+          if (appendChar === void 0) appendChar = charMap[ch];
+          if (appendChar === void 0) appendChar = ch;
+          if (appendChar === replacement) appendChar = " ";
           return result + appendChar.replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g, "");
         }, "");
         if (options.strict) {
@@ -23187,8 +23127,8 @@ var require_slugify = __commonJS({
 });
 
 // src/index.ts
-var core3 = __toESM(require_core());
-var github3 = __toESM(require_github());
+var core4 = __toESM(require_core());
+var github4 = __toESM(require_github());
 
 // ../ci-sdk/dist/index.mjs
 var import_slugify = __toESM(require_slugify(), 1);
@@ -23226,8 +23166,7 @@ var defaultServiceBase = "https://app.qawolf.com/";
 var version2 = "0.23.1";
 var defaultUserAgent = `ci-sdk/${version2}`;
 async function logFetchError({ log, methodName, response }) {
-  if (response.ok)
-    return;
+  if (response.ok) return;
   const { eventId, failureMessage } = await (async () => {
     try {
       const body = await response.json().catch(() => response.text());
@@ -23278,8 +23217,7 @@ async function attemptNotifyDeploy(deps, apiConfig, config) {
       },
       method: "POST"
     });
-    if (!response.ok)
-      return handleErrorResponse(response, log);
+    if (!response.ok) return handleErrorResponse(response, log);
     const data = await response.json();
     return handleSuccessResponse(data, log);
   } catch (error2) {
@@ -23295,16 +23233,11 @@ __name(attemptNotifyDeploy, "attemptNotifyDeploy");
 async function handleErrorResponse(response, log) {
   const status = response.status;
   let abortReason;
-  if (status === void 0)
-    abortReason = "network-error";
-  else if (status === 401)
-    abortReason = "401-unauthorized";
-  else if (status === 403)
-    abortReason = "403-forbidden";
-  else if (status >= 500)
-    abortReason = "5XX-server-error";
-  else
-    abortReason = "4XX-client-error";
+  if (status === void 0) abortReason = "network-error";
+  else if (status === 401) abortReason = "401-unauthorized";
+  else if (status === 403) abortReason = "403-forbidden";
+  else if (status >= 500) abortReason = "5XX-server-error";
+  else abortReason = "4XX-client-error";
   await logFetchError({
     log,
     methodName: "attemptNotifyDeploy",
@@ -23434,14 +23367,10 @@ async function generateSignedUrlForRunInputsExecutablesStorage(deps, apiConfig, 
       abortReason = "5XX-server-error";
       log.error(`\u{1F6AB} Unrecoverable error (status ${responseState.httpStatus}) when generating signed upload url: aborting.`);
     } else {
-      if (responseState.httpStatus === 400)
-        abortReason = "400-invalid-request";
-      else if (responseState.httpStatus === 401)
-        abortReason = "401-invalid-credentials";
-      else if (responseState.httpStatus === 403)
-        abortReason = "403-forbidden";
-      else if (responseState.httpStatus === 0)
-        abortReason = "client-network-error";
+      if (responseState.httpStatus === 400) abortReason = "400-invalid-request";
+      else if (responseState.httpStatus === 401) abortReason = "401-invalid-credentials";
+      else if (responseState.httpStatus === 403) abortReason = "403-forbidden";
+      else if (responseState.httpStatus === 0) abortReason = "client-network-error";
       log.error(`\u{1F6AB} Unrecoverable error (status ${responseState.httpStatus}) when generating signed upload url: ${responseState.errorMessage ? `${responseState.errorMessage}.` : ""} aborting.`);
     }
     return {
@@ -23514,14 +23443,10 @@ async function generateSignedUrlForTempTeamStorage(deps, apiConfig, config) {
       abortReason = "5XX-server-error";
       log.error(`\u{1F6AB} Unrecoverable error (status ${responseState.httpStatus}) when generating signed upload url: aborting.`);
     } else {
-      if (responseState.httpStatus === 400)
-        abortReason = "400-invalid-request";
-      else if (responseState.httpStatus === 401)
-        abortReason = "401-invalid-credentials";
-      else if (responseState.httpStatus === 403)
-        abortReason = "403-forbidden";
-      else if (responseState.httpStatus === 0)
-        abortReason = "client-network-error";
+      if (responseState.httpStatus === 400) abortReason = "400-invalid-request";
+      else if (responseState.httpStatus === 401) abortReason = "401-invalid-credentials";
+      else if (responseState.httpStatus === 403) abortReason = "403-forbidden";
+      else if (responseState.httpStatus === 0) abortReason = "client-network-error";
       log.error(`\u{1F6AB} Unrecoverable error (status ${responseState.httpStatus}) when generating signed upload url: ${responseState.errorMessage ? `${responseState.errorMessage}.` : ""} aborting.`);
     }
     return {
@@ -23627,8 +23552,7 @@ async function findOrCreateEnvironment(deps, apiConfig, { baseEnvironmentId, bra
   });
   const createionResponseJson = await creationResponse.json();
   deps.log.info(`Environment response: ${JSON.stringify(createionResponseJson)}`);
-  if (!createionResponseJson.data.createEnvironment.id)
-    throw Error("Environment ID not found in response");
+  if (!createionResponseJson.data.createEnvironment.id) throw Error("Environment ID not found in response");
   const multiBranchResponse = await deps.fetch(qawolfGraphQLEndpoint, {
     body: JSON.stringify({
       query: `
@@ -23653,8 +23577,7 @@ async function findOrCreateEnvironment(deps, apiConfig, { baseEnvironmentId, bra
   });
   const multiBranchResponseJson = await multiBranchResponse.json();
   const hasMultipleBranches = multiBranchResponseJson.data.teamBranches.length > 1;
-  if (!hasMultipleBranches)
-    return createionResponseJson.data.createEnvironment.id;
+  if (!hasMultipleBranches) return createionResponseJson.data.createEnvironment.id;
   const sourceEnvironmentResponse = await deps.fetch(qawolfGraphQLEndpoint, {
     body: JSON.stringify({
       query: `
@@ -23680,8 +23603,7 @@ async function findOrCreateEnvironment(deps, apiConfig, { baseEnvironmentId, bra
   const sourceEnvironmentJson = await sourceEnvironmentResponse.json();
   const baseBranchId = sourceEnvironmentJson.data.environment.branchId;
   const targetBranchId = createionResponseJson.data.createEnvironment.branchId;
-  if (!baseBranchId)
-    throw Error("Base branch ID not found in response");
+  if (!baseBranchId) throw Error("Base branch ID not found in response");
   deps.log.info(`Promoting workflows from branch ${baseBranchId} to ${targetBranchId}`);
   const promotionResponse = await deps.fetch(qawolfGraphQLEndpoint, {
     body: JSON.stringify({
@@ -23709,8 +23631,7 @@ async function findOrCreateEnvironment(deps, apiConfig, { baseEnvironmentId, bra
     method: "post"
   });
   const promotionResponseJson = await promotionResponse.json();
-  if (!promotionResponseJson)
-    throw Error("Promotion failed");
+  if (!promotionResponseJson) throw Error("Promotion failed");
   return createionResponseJson.data.createEnvironment.id;
 }
 __name(findOrCreateEnvironment, "findOrCreateEnvironment");
@@ -23799,8 +23720,7 @@ async function findOrCreateTrigger(deps, apiConfig, args) {
   const creationResponseJson = await creationResponse.json();
   deps.log.info(`Trigger response: ${JSON.stringify(creationResponseJson)}`);
   const triggerId = creationResponseJson.data?.createTrigger?.id;
-  if (!triggerId)
-    throw Error("Trigger ID not found in response");
+  if (!triggerId) throw Error("Trigger ID not found in response");
   deps.log.info(`Trigger created with ID: ${triggerId}`);
   return triggerId;
 }
@@ -23832,8 +23752,7 @@ async function findRepositoryIdByName(deps, apiConfig, { headRepoFullName }) {
   const responseJson = await response.json();
   deps.log.info(`Repository response: ${JSON.stringify(responseJson)}`);
   const repositories = responseJson.data.codeHostingServiceRepositories;
-  if (!repositories[0])
-    return;
+  if (!repositories[0]) return;
   return repositories[0].id;
 }
 __name(findRepositoryIdByName, "findRepositoryIdByName");
@@ -24002,8 +23921,7 @@ async function getEnvironmentIdForBranch(deps, apiConfig, branch) {
   const responseJson = await response.json();
   deps.log.info(`Trigger response: ${JSON.stringify(responseJson)}`);
   const triggers = responseJson.data.triggers;
-  if (!triggers || !triggers[0])
-    throw Error(`No environment found for branch: ${branch}`);
+  if (!triggers || !triggers[0]) throw Error(`No environment found for branch: ${branch}`);
   return triggers[0].environment_id;
 }
 __name(getEnvironmentIdForBranch, "getEnvironmentIdForBranch");
@@ -24131,12 +24049,9 @@ async function pollCiGreenlightStatus(deps, apiConfig, { onRunStageChanged = /* 
           };
         }
         let abortReason = "XXX-other-http-code";
-        if (responseState.errorType === "not-found")
-          abortReason = "404-run-not-found";
-        else if (responseState.errorType === "server")
-          abortReason = "5XX-server-error";
-        else
-          ;
+        if (responseState.errorType === "not-found") abortReason = "404-run-not-found";
+        else if (responseState.errorType === "server") abortReason = "5XX-server-error";
+        else ;
         return {
           abortReason,
           httpStatus: responseState.httpStatus,
@@ -24145,12 +24060,9 @@ async function pollCiGreenlightStatus(deps, apiConfig, { onRunStageChanged = /* 
       }
       const { errorType, httpStatus } = responseState;
       const retryLabel = `${httpStatus ? ` (status ${httpStatus})` : ""}, will try again... (${retries}/${maxRetries})`;
-      if (errorType === "network")
-        log.warn(`\u274C Network error${retryLabel}`);
-      else if (errorType === "not-found")
-        log.info(`\u23F3 Run not found${retryLabel}`);
-      else if (errorType === "server")
-        log.warn(`\u274C Server error${retryLabel}`);
+      if (errorType === "network") log.warn(`\u274C Network error${retryLabel}`);
+      else if (errorType === "not-found") log.info(`\u23F3 Run not found${retryLabel}`);
+      else if (errorType === "server") log.warn(`\u274C Server error${retryLabel}`);
       await sleep(retryInterval);
       continue;
     }
@@ -24231,8 +24143,7 @@ ${urlInfo}`);
     } else if (runStage === "underReview") {
       log.info(`\u{1F575}\uFE0F  Run is under review... ${urlInfo}`);
       await sleep(runUnderReviewInterval);
-    } else
-      throw Error(`Unexpected run stage: ${runStage}`);
+    } else throw Error(`Unexpected run stage: ${runStage}`);
   }
   log.warn(`\u274C Poll timed out after ${pollTimeout / 1e3}s. Aborting...`);
   return {
@@ -24288,8 +24199,7 @@ async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, de
       throw new GraphQLBadResponseError(`[GraphQL] Unexpected response schema. Not valid JSON body.`);
     }
     if ("errors" in rawBody) {
-      for (const error2 of rawBody.errors)
-        log.warn(`\u274C [GraphQL] error: ${error2.message}`);
+      for (const error2 of rawBody.errors) log.warn(`\u274C [GraphQL] error: ${error2.message}`);
       const firstError = rawBody.errors[0];
       const eventId = firstError?.extensions?.eventId;
       const errorCode = firstError?.extensions?.code;
@@ -24313,8 +24223,7 @@ async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, de
       responseBody: rawBody.data[name]
     };
   } catch (e) {
-    if (e instanceof GraphQLBadResponseError)
-      throw e;
+    if (e instanceof GraphQLBadResponseError) throw e;
     log.error(`\u274C [GraphQL] network error: ${e instanceof Error ? e.message : e}`);
     return {
       abortReason: "network-error",
@@ -24431,10 +24340,8 @@ async function retryWithExponentialBackoff({ log, maxRetries, methodName, retria
     attemptNumber++;
     log.info(`\u{1F501} [${methodName}] Attempt ${attemptNumber}/${maxRetries + 1}.`);
     result = await runOnce();
-    if (result.outcome === "success" || !retriableAbortReasons.includes(result.abortReason))
-      return result;
-    if (attemptNumber >= maxRetries + 1)
-      return result;
+    if (result.outcome === "success" || !retriableAbortReasons.includes(result.abortReason)) return result;
+    if (attemptNumber >= maxRetries + 1) return result;
     const backoffMs = getBackoffMs(attemptNumber);
     const secondsApproximation = (backoffMs / 1e3).toFixed(1);
     log.warn(`\u23F3 [${methodName}] Retrying in ${secondsApproximation} seconds.`);
@@ -24623,8 +24530,7 @@ async function runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input) {
   const baseEnvironmentAlias = baseEnvironmentsMapping?.find((mapping) => mapping.vcsBranch === baseVcsBranch)?.environmentAlias;
   let finalConcurrencyLimit = concurrencyLimit;
   if (typeof concurrencyLimit === "number") {
-    if (concurrencyLimit === Infinity)
-      finalConcurrencyLimit = 0;
+    if (concurrencyLimit === Infinity) finalConcurrencyLimit = 0;
     else if (Number.isNaN(concurrencyLimit) || !Number.isInteger(concurrencyLimit)) {
       log.error(`\u274C [notifyVCSBranchBuildDeployed] Invalid concurrency limit '${concurrencyLimit}'. Must be a positive integer.`);
       return {
@@ -25218,19 +25124,14 @@ var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 function __classPrivateFieldGet(receiver, state, kind, f) {
-  if (kind === "a" && !f)
-    throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-    throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 }
 function __classPrivateFieldSet(receiver, state, value, kind, f) {
-  if (kind === "m")
-    throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f)
-    throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-    throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
   return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 }
 var errorUtil;
@@ -26949,8 +26850,7 @@ var ZodObject = class _ZodObject extends ZodType {
           });
           status.dirty();
         }
-      } else if (unknownKeys === "strip")
-        ;
+      } else if (unknownKeys === "strip") ;
       else {
         throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
       }
@@ -28684,13 +28584,10 @@ var z = /* @__PURE__ */ Object.freeze({
 var __defProp3 = Object.defineProperty;
 var __name2 = (target, value) => __defProp3(target, "name", { value, configurable: true });
 function stringifyUnknown(value) {
-  if (value === null || value === void 0)
-    return "";
-  if (typeof value === "string")
-    return value;
+  if (value === null || value === void 0) return "";
+  if (typeof value === "string") return value;
   if (value instanceof Error) {
-    if ("message" in value && typeof value.message === "string")
-      return value.message;
+    if ("message" in value && typeof value.message === "string") return value.message;
     return value.toString();
   }
   try {
@@ -28738,11 +28635,44 @@ var jsonEnvironmentsMappingSchema = z.string().transform((str, ctx) => {
 }).pipe(environmentsMappingSchema);
 
 // package.json
-var version3 = "v1.1.3";
+var version3 = "v1.1.4";
 
 // src/extractRelevantDataFromEvent/index.ts
+var core2 = __toESM(require_core());
+var github2 = __toESM(require_github());
+
+// src/extractRelevantDataFromEvent/fetchPullRequestDataFromMergeGroupRef.ts
 var core = __toESM(require_core());
 var github = __toESM(require_github());
+async function fetchPullRequestDataFromMergeGroupRef(headRef) {
+  const match = headRef.match(/gh-readonly-queue\/.*\/pr-(\d+)-/);
+  const pullRequestNumber = match && match[1] ? Number(match[1]) : void 0;
+  if (!pullRequestNumber) {
+    core.info(
+      `Unable to get pull request number from merge group ref: ${headRef}`
+    );
+    return "no-pull-request";
+  }
+  if (!process.env.GITHUB_TOKEN) {
+    core.info(
+      "GITHUB_TOKEN is missing, skipping branch extraction for merge group"
+    );
+    return { pullRequestNumber };
+  }
+  const { context: context3 } = github;
+  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+  const { data: pullRequest } = await octokit.rest.pulls.get({
+    owner: context3.repo.owner,
+    pull_number: pullRequestNumber,
+    repo: context3.repo.repo
+  });
+  return {
+    branch: pullRequest.head.ref,
+    pullRequestNumber
+  };
+}
+
+// src/extractRelevantDataFromEvent/index.ts
 var extractRelevantDataFromEvent = async (context3) => {
   try {
     switch (context3.eventName) {
@@ -28763,7 +28693,7 @@ var extractRelevantDataFromEvent = async (context3) => {
       }
     }
   } catch (error2) {
-    core.debug(`Failed to extract event data: ${error2}`);
+    core2.debug(`Failed to extract event data: ${error2}`);
     return void 0;
   }
 };
@@ -28788,28 +28718,25 @@ var extractRelevantDataFromPush = async (context3) => {
 };
 var extractRelevantDataFromMergeGroup = async (context3) => {
   const mergeGroup = context3.payload;
-  const pullRequestData = await fetchPullRequestData(
-    mergeGroup.merge_group.base_sha
+  const pullRequestData = await fetchPullRequestDataFromMergeGroupRef(
+    mergeGroup.merge_group.head_ref
   );
   if (typeof pullRequestData === "string") {
-    core.info(
-      `Unable to get pull request info from deployment: ${pullRequestData}`
+    core2.info(
+      `Unable to get pull request info for merge group: ${pullRequestData}`
     );
   }
   return {
-    ...typeof pullRequestData === "object" ? pullRequestData : {},
-    // Use the merge group's base branch/SHA
-    // instead of merge queue's temporary values (head_ref/head_sha)
-    // This ensures we track the actual PR target branch being merged
-    branch: mergeGroup.merge_group.base_ref.replace("refs/heads/", ""),
-    sha: mergeGroup.merge_group.base_sha
+    branch: mergeGroup.merge_group.head_ref.replace("refs/heads/", ""),
+    sha: mergeGroup.merge_group.head_sha,
+    ...typeof pullRequestData === "object" ? pullRequestData : {}
   };
 };
 var extractRelevantDataFromDeployment = async (context3) => {
   const event = context3.payload;
   const pullRequestData = await fetchPullRequestData(event.deployment.sha);
   if (typeof pullRequestData === "string") {
-    core.info(
+    core2.info(
       `Unable to get pull request info from deployment: ${pullRequestData}`
     );
   }
@@ -28821,11 +28748,11 @@ var extractRelevantDataFromDeployment = async (context3) => {
 };
 async function fetchPullRequestData(sha) {
   if (!process.env.GITHUB_TOKEN) {
-    core.info("GITHUB_TOKEN is missing, skipping pull request data extraction");
+    core2.info("GITHUB_TOKEN is missing, skipping pull request data extraction");
     return "missing-github-token";
   }
-  const { context: context3 } = github;
-  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+  const { context: context3 } = github2;
+  const octokit = github2.getOctokit(process.env.GITHUB_TOKEN);
   try {
     const { data: searchData } = await octokit.rest.search.issuesAndPullRequests({
       q: `repo:${context3.repo.owner}/${context3.repo.repo} is:pr ${sha} sort:updated-desc`
@@ -28834,7 +28761,7 @@ async function fetchPullRequestData(sha) {
       (item) => item.pull_request && item.state === "open"
     );
     if (!sortedOpenPullRequests.length) {
-      core.info(
+      core2.info(
         `No open pull requests found for sha = ${sha}. This is only an issue if you're running this action on a PR.`
       );
       return "no-pull-request";
@@ -28850,16 +28777,15 @@ async function fetchPullRequestData(sha) {
     );
     const exactMatch = pullRequestDetails.find((pr) => pr.head.sha === sha);
     if (exactMatch) {
-      core.info(`Found exact SHA = ${sha} match in PR #${exactMatch.number}`);
+      core2.info(`Found exact SHA = ${sha} match in PR #${exactMatch.number}`);
       return {
         branch: exactMatch.head.ref,
         pullRequestNumber: exactMatch.number
       };
     }
     const mostRecent = pullRequestDetails[0];
-    if (!mostRecent)
-      return "no-pull-request";
-    core.info(
+    if (!mostRecent) return "no-pull-request";
+    core2.info(
       `No PR found with head SHA = ${sha}. Using most recent PR #${mostRecent.number} containing SHA = ${sha}`
     );
     return {
@@ -28867,43 +28793,43 @@ async function fetchPullRequestData(sha) {
       pullRequestNumber: mostRecent.number
     };
   } catch (error2) {
-    core.info(`Failed to fetch pull request data: ${error2}`);
+    core2.info(`Failed to fetch pull request data: ${error2}`);
     return "fail-to-fetch-pull-request-data";
   }
 }
 
 // src/validateInput.ts
-var core2 = __toESM(require_core());
-var github2 = __toESM(require_github());
+var core3 = __toESM(require_core());
+var github3 = __toESM(require_github());
 
 // src/types.ts
 var urlSchema = z.string().url();
 
 // src/validateInput.ts
 function validateInput(relevantEventData) {
-  const qawolfApiKey = core2.getInput("qawolf-api-key", {
+  const qawolfApiKey = core3.getInput("qawolf-api-key", {
     required: true
   });
-  const shaInput = core2.getInput("sha", { required: false }) || relevantEventData?.sha;
-  const branchInput = core2.getInput("branch", {
+  const shaInput = core3.getInput("sha", { required: false }) || relevantEventData?.sha;
+  const branchInput = core3.getInput("branch", {
     required: false
   }) || relevantEventData?.branch;
-  const deploymentTypeInput = core2.getInput("deployment-type", {
+  const deploymentTypeInput = core3.getInput("deployment-type", {
     required: false
   }) || void 0;
-  const deploymentUrlInput = core2.getInput("deployment-url", {
+  const deploymentUrlInput = core3.getInput("deployment-url", {
     required: false
   });
-  const environmentVariablesInput = core2.getInput("variables", {
+  const environmentVariablesInput = core3.getInput("variables", {
     required: false
   });
-  const deduplicationKeyInput = core2.getInput("deduplication-key", {
+  const deduplicationKeyInput = core3.getInput("deduplication-key", {
     required: false
   }) || void 0;
-  const commitUrlInput = core2.getInput("commit-url", {
+  const commitUrlInput = core3.getInput("commit-url", {
     required: false
   }) || relevantEventData?.commitUrl;
-  const pullRequestNumberInput = core2.getInput("pull-request-number", {
+  const pullRequestNumberInput = core3.getInput("pull-request-number", {
     required: false
   }) || relevantEventData?.pullRequestNumber;
   if (!shaInput && !branchInput && !deploymentTypeInput) {
@@ -28947,7 +28873,7 @@ function validateInput(relevantEventData) {
     }
     validatedEnvironmentVariables = result.data;
   }
-  const rawQawolfBaseUrl = core2.getInput("qawolf-base-url").trim();
+  const rawQawolfBaseUrl = core3.getInput("qawolf-base-url").trim();
   const qawolfBaseUrl2 = rawQawolfBaseUrl || void 0;
   return {
     apiKey: qawolfApiKey,
@@ -28960,8 +28886,8 @@ function validateInput(relevantEventData) {
       hostingService: "GitHub",
       pullRequestNumber: pullRequestNumberInput !== void 0 ? Number(pullRequestNumberInput) : void 0,
       repository: {
-        name: github2.context.repo.repo,
-        owner: github2.context.repo.owner
+        name: github3.context.repo.repo,
+        owner: github3.context.repo.owner
       },
       sha: shaInput,
       variables: validatedEnvironmentVariables
@@ -28973,13 +28899,13 @@ function validateInput(relevantEventData) {
 
 // src/index.ts
 async function runGitHubAction() {
-  core3.debug("Extracting relevant event data.");
-  const relevantEventData = await extractRelevantDataFromEvent(github3.context);
-  core3.debug(`Relevant event data: ${JSON.stringify(relevantEventData)}`);
-  core3.debug("Validating input.");
+  core4.debug("Extracting relevant event data.");
+  const relevantEventData = await extractRelevantDataFromEvent(github4.context);
+  core4.debug(`Relevant event data: ${JSON.stringify(relevantEventData)}`);
+  core4.debug("Validating input.");
   const validationResult = validateInput(relevantEventData);
   if (!validationResult.isValid) {
-    core3.setFailed(`Action input is invalid: ${validationResult.error}`);
+    core4.setFailed(`Action input is invalid: ${validationResult.error}`);
     return;
   }
   const { apiKey, deployConfig, qawolfBaseUrl: qawolfBaseUrl2 } = validationResult;
@@ -28994,26 +28920,26 @@ async function runGitHubAction() {
       log: coreLogDriver
     }
   );
-  core3.info("Attempting to notify QA Wolf of deployment.");
+  core4.info("Attempting to notify QA Wolf of deployment.");
   const deployResult = await attemptNotifyDeploy2(deployConfig);
   if (deployResult.outcome === "aborted") {
-    core3.setFailed(
+    core4.setFailed(
       `Failed to reach QA Wolf API with reason "${deployResult.abortReason}" ${deployResult.httpStatus ? `, HTTP status ${deployResult.httpStatus}` : ""}.`
     );
     return;
   }
   if (deployResult.outcome === "failed") {
-    core3.setFailed(
+    core4.setFailed(
       `Failed notifying QA Wolf of deployment with reason "${deployResult.failReason}"`
     );
     return;
   }
   const { environmentId, runId } = deployResult;
-  core3.setOutput("environment-id", environmentId);
-  core3.setOutput("run-id", runId);
+  core4.setOutput("environment-id", environmentId);
+  core4.setOutput("run-id", runId);
 }
 runGitHubAction().catch((error2) => {
-  core3.setFailed(
+  core4.setFailed(
     `Action failed with reason: ${stringifyUnknown(error2) ?? "Unknown error"}`
   );
 });

@@ -1,6 +1,6 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.1.3",
+  "version": "v1.1.4",
   "type": "commonjs",
   "main": "dist/index.js",
   "engines": {
@@ -25,6 +25,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "esbuild": "^0.19.2"
+    "esbuild": "^0.25.0"
   }
 }
