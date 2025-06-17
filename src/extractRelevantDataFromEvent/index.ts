@@ -7,7 +7,7 @@ import {
   type PushEvent,
 } from "@octokit/webhooks-types";
 
-import { fetchPullRequestDataFromMergeGroupRef } from "./fetchPullRequestDataFromMergeGroupRef";
+import { fetchPullRequestDataFromMergeGroupRef } from "./fetchPullRequestDataFromMergeGroupRef.js";
 
 export type RelevantEventData = {
   branch?: string;

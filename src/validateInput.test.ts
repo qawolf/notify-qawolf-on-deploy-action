@@ -1,34 +1,36 @@
-import * as core from "@actions/core";
+import { jest } from "@jest/globals";
 
-import { validateInput } from "./validateInput";
+import { mockContext } from "./extractRelevantDataFromEvent/test-setup.js";
 
-// Mock the @actions/core and @actions/github modules
-jest.mock("@actions/core");
+const defaultInputs = {
+  branch: "main",
+  "commit-url": "https://github.com/owner/repo/commit",
+  "deduplication-key": "test-key",
+  "deployment-type": "production",
+  "deployment-url": "https://example.com",
+  "pull-request-number": "123",
+  "qawolf-api-key": "test-api-key",
+  "qawolf-base-url": "https://qawolf.com",
+  sha: "test-sha",
+  variables: JSON.stringify({ key: "value" }),
+};
+
 jest.mock("@actions/github", () => ({
-  context: {
-    repo: {
-      owner: "owner",
-      repo: "repo",
-    },
-  },
+  context: mockContext,
 }));
+const mockGetInput = jest.fn<(name: string) => any>();
+jest.mock("@actions/core", () => ({
+  error: jest.fn(),
+  getInput: mockGetInput,
+  info: jest.fn(),
+  warning: jest.fn(),
+}));
+
+const { validateInput } = await import("./validateInput.js");
 
 describe("validateInput", () => {
   const mockInputs = (overrides: Record<string, string | undefined> = {}) => {
-    const defaultInputs = {
-      branch: "main",
-      "commit-url": "https://github.com/owner/repo/commit",
-      "deduplication-key": "test-key",
-      "deployment-type": "production",
-      "deployment-url": "https://example.com",
-      "pull-request-number": "123",
-      "qawolf-api-key": "test-api-key",
-      "qawolf-base-url": "https://qawolf.com",
-      sha: "test-sha",
-      variables: JSON.stringify({ key: "value" }),
-    };
-
-    (core.getInput as jest.Mock).mockImplementation((name) => {
+    mockGetInput.mockImplementation((name) => {
       return name in overrides
         ? overrides[name]
         : defaultInputs[name as keyof typeof defaultInputs];

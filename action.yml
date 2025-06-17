@@ -24,6 +24,10 @@ inputs:
     required: false
   commit-url:
     description: "If you don't have our GitHub application installed, you can pass the commit URL and it will be surfaced in the UI. Refer to our official documentation for more details."
+    required: false
+  pull-request-number:
+    description: "The pull request number associated with this deployment."
+    required: false
   variables:
     description: "JSON-formatted environment variables for deployment to be tested. Refer to our official documentation for more details."
     required: false

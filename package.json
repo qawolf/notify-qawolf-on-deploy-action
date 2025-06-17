@@ -1,18 +1,14 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.1.4",
-  "type": "commonjs",
+  "version": "v1.1.5",
+  "type": "module",
   "main": "dist/index.js",
-  "engines": {
-    "node": "^16 || ^18 || ^20"
-  },
   "scripts": {
-    "build": "npx esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --tsconfig=tsconfig.build.json",
-    "build:clean": "tsc --build --clean && rm -rf ./dist",
-    "lint": "cycle-import-scan . && eslint . --ext js,jsx,mjs,ts,tsx --quiet && prettier --check .",
-    "lint:fix": "eslint . --ext js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
-    "lint:warnings": "eslint . --ext js,jsx,mjs,ts,tsx",
-    "test": "jest --passWithNoTests",
+    "build": "rm -rf ./dist && node esbuild.mjs",
+    "lint": "cycle-import-scan . && eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --quiet && prettier --check .",
+    "lint:fix": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
+    "lint:warnings": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" NODE_NO_WARNINGS=1 jest --passWithNoTests",
     "test:watch": "npm run test -- --watch",
     "tsc:check": "tsc"
   },
@@ -25,6 +21,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.5"
+  },
+  "engines": {
+    "node": "^20"
   }
 }

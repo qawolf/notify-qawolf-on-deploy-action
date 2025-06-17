@@ -1,3 +1,5 @@
+import { createRequire as topLevelCreateRequire } from "module";
+const require = topLevelCreateRequire(import.meta.url);
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -312,7 +314,7 @@ function stringToBytes(str) {
   }
   return bytes;
 }
-function v35_default(name, version4, hashfunc) {
+function v35_default(name, version2, hashfunc) {
   function generateUUID(value, namespace, buf, offset) {
     if (typeof value === "string") {
       value = stringToBytes(value);
@@ -327,7 +329,7 @@ function v35_default(name, version4, hashfunc) {
     bytes.set(namespace);
     bytes.set(value, namespace.length);
     bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version4;
+    bytes[6] = bytes[6] & 15 | version2;
     bytes[8] = bytes[8] & 63 | 128;
     if (buf) {
       offset = offset || 0;
@@ -5607,6 +5609,13 @@ var require_body = __commonJS({
     var { isUint8Array, isArrayBuffer } = require("util/types");
     var { File: UndiciFile } = require_file();
     var { parseMIMEType, serializeAMimeType } = require_dataURL();
+    var random;
+    try {
+      const crypto4 = require("node:crypto");
+      random = (max) => crypto4.randomInt(0, max);
+    } catch {
+      random = (max) => Math.floor(Math.random(max));
+    }
     var ReadableStream = globalThis.ReadableStream;
     var File = NativeFile ?? UndiciFile;
     var textEncoder = new TextEncoder();
@@ -5649,7 +5658,7 @@ var require_body = __commonJS({
       } else if (ArrayBuffer.isView(object)) {
         source = new Uint8Array(object.buffer.slice(object.byteOffset, object.byteOffset + object.byteLength));
       } else if (util2.isFormDataLike(object)) {
-        const boundary = `----formdata-undici-0${`${Math.floor(Math.random() * 1e11)}`.padStart(11, "0")}`;
+        const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
         const escape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
@@ -23075,63 +23084,11 @@ var require_github = __commonJS({
   }
 });
 
-// ../../node_modules/slugify/slugify.js
-var require_slugify = __commonJS({
-  "../../node_modules/slugify/slugify.js"(exports2, module2) {
-    "use strict";
-    (function(name, root, factory) {
-      if (typeof exports2 === "object") {
-        module2.exports = factory();
-        module2.exports["default"] = factory();
-      } else if (typeof define === "function" && define.amd) {
-        define(factory);
-      } else {
-        root[name] = factory();
-      }
-    })("slugify", exports2, function() {
-      var charMap = JSON.parse(`{"$":"dollar","%":"percent","&":"and","<":"less",">":"greater","|":"or","\xA2":"cent","\xA3":"pound","\xA4":"currency","\xA5":"yen","\xA9":"(c)","\xAA":"a","\xAE":"(r)","\xBA":"o","\xC0":"A","\xC1":"A","\xC2":"A","\xC3":"A","\xC4":"A","\xC5":"A","\xC6":"AE","\xC7":"C","\xC8":"E","\xC9":"E","\xCA":"E","\xCB":"E","\xCC":"I","\xCD":"I","\xCE":"I","\xCF":"I","\xD0":"D","\xD1":"N","\xD2":"O","\xD3":"O","\xD4":"O","\xD5":"O","\xD6":"O","\xD8":"O","\xD9":"U","\xDA":"U","\xDB":"U","\xDC":"U","\xDD":"Y","\xDE":"TH","\xDF":"ss","\xE0":"a","\xE1":"a","\xE2":"a","\xE3":"a","\xE4":"a","\xE5":"a","\xE6":"ae","\xE7":"c","\xE8":"e","\xE9":"e","\xEA":"e","\xEB":"e","\xEC":"i","\xED":"i","\xEE":"i","\xEF":"i","\xF0":"d","\xF1":"n","\xF2":"o","\xF3":"o","\xF4":"o","\xF5":"o","\xF6":"o","\xF8":"o","\xF9":"u","\xFA":"u","\xFB":"u","\xFC":"u","\xFD":"y","\xFE":"th","\xFF":"y","\u0100":"A","\u0101":"a","\u0102":"A","\u0103":"a","\u0104":"A","\u0105":"a","\u0106":"C","\u0107":"c","\u010C":"C","\u010D":"c","\u010E":"D","\u010F":"d","\u0110":"DJ","\u0111":"dj","\u0112":"E","\u0113":"e","\u0116":"E","\u0117":"e","\u0118":"e","\u0119":"e","\u011A":"E","\u011B":"e","\u011E":"G","\u011F":"g","\u0122":"G","\u0123":"g","\u0128":"I","\u0129":"i","\u012A":"i","\u012B":"i","\u012E":"I","\u012F":"i","\u0130":"I","\u0131":"i","\u0136":"k","\u0137":"k","\u013B":"L","\u013C":"l","\u013D":"L","\u013E":"l","\u0141":"L","\u0142":"l","\u0143":"N","\u0144":"n","\u0145":"N","\u0146":"n","\u0147":"N","\u0148":"n","\u014C":"O","\u014D":"o","\u0150":"O","\u0151":"o","\u0152":"OE","\u0153":"oe","\u0154":"R","\u0155":"r","\u0158":"R","\u0159":"r","\u015A":"S","\u015B":"s","\u015E":"S","\u015F":"s","\u0160":"S","\u0161":"s","\u0162":"T","\u0163":"t","\u0164":"T","\u0165":"t","\u0168":"U","\u0169":"u","\u016A":"u","\u016B":"u","\u016E":"U","\u016F":"u","\u0170":"U","\u0171":"u","\u0172":"U","\u0173":"u","\u0174":"W","\u0175":"w","\u0176":"Y","\u0177":"y","\u0178":"Y","\u0179":"Z","\u017A":"z","\u017B":"Z","\u017C":"z","\u017D":"Z","\u017E":"z","\u018F":"E","\u0192":"f","\u01A0":"O","\u01A1":"o","\u01AF":"U","\u01B0":"u","\u01C8":"LJ","\u01C9":"lj","\u01CB":"NJ","\u01CC":"nj","\u0218":"S","\u0219":"s","\u021A":"T","\u021B":"t","\u0259":"e","\u02DA":"o","\u0386":"A","\u0388":"E","\u0389":"H","\u038A":"I","\u038C":"O","\u038E":"Y","\u038F":"W","\u0390":"i","\u0391":"A","\u0392":"B","\u0393":"G","\u0394":"D","\u0395":"E","\u0396":"Z","\u0397":"H","\u0398":"8","\u0399":"I","\u039A":"K","\u039B":"L","\u039C":"M","\u039D":"N","\u039E":"3","\u039F":"O","\u03A0":"P","\u03A1":"R","\u03A3":"S","\u03A4":"T","\u03A5":"Y","\u03A6":"F","\u03A7":"X","\u03A8":"PS","\u03A9":"W","\u03AA":"I","\u03AB":"Y","\u03AC":"a","\u03AD":"e","\u03AE":"h","\u03AF":"i","\u03B0":"y","\u03B1":"a","\u03B2":"b","\u03B3":"g","\u03B4":"d","\u03B5":"e","\u03B6":"z","\u03B7":"h","\u03B8":"8","\u03B9":"i","\u03BA":"k","\u03BB":"l","\u03BC":"m","\u03BD":"n","\u03BE":"3","\u03BF":"o","\u03C0":"p","\u03C1":"r","\u03C2":"s","\u03C3":"s","\u03C4":"t","\u03C5":"y","\u03C6":"f","\u03C7":"x","\u03C8":"ps","\u03C9":"w","\u03CA":"i","\u03CB":"y","\u03CC":"o","\u03CD":"y","\u03CE":"w","\u0401":"Yo","\u0402":"DJ","\u0404":"Ye","\u0406":"I","\u0407":"Yi","\u0408":"J","\u0409":"LJ","\u040A":"NJ","\u040B":"C","\u040F":"DZ","\u0410":"A","\u0411":"B","\u0412":"V","\u0413":"G","\u0414":"D","\u0415":"E","\u0416":"Zh","\u0417":"Z","\u0418":"I","\u0419":"J","\u041A":"K","\u041B":"L","\u041C":"M","\u041D":"N","\u041E":"O","\u041F":"P","\u0420":"R","\u0421":"S","\u0422":"T","\u0423":"U","\u0424":"F","\u0425":"H","\u0426":"C","\u0427":"Ch","\u0428":"Sh","\u0429":"Sh","\u042A":"U","\u042B":"Y","\u042C":"","\u042D":"E","\u042E":"Yu","\u042F":"Ya","\u0430":"a","\u0431":"b","\u0432":"v","\u0433":"g","\u0434":"d","\u0435":"e","\u0436":"zh","\u0437":"z","\u0438":"i","\u0439":"j","\u043A":"k","\u043B":"l","\u043C":"m","\u043D":"n","\u043E":"o","\u043F":"p","\u0440":"r","\u0441":"s","\u0442":"t","\u0443":"u","\u0444":"f","\u0445":"h","\u0446":"c","\u0447":"ch","\u0448":"sh","\u0449":"sh","\u044A":"u","\u044B":"y","\u044C":"","\u044D":"e","\u044E":"yu","\u044F":"ya","\u0451":"yo","\u0452":"dj","\u0454":"ye","\u0456":"i","\u0457":"yi","\u0458":"j","\u0459":"lj","\u045A":"nj","\u045B":"c","\u045D":"u","\u045F":"dz","\u0490":"G","\u0491":"g","\u0492":"GH","\u0493":"gh","\u049A":"KH","\u049B":"kh","\u04A2":"NG","\u04A3":"ng","\u04AE":"UE","\u04AF":"ue","\u04B0":"U","\u04B1":"u","\u04BA":"H","\u04BB":"h","\u04D8":"AE","\u04D9":"ae","\u04E8":"OE","\u04E9":"oe","\u0531":"A","\u0532":"B","\u0533":"G","\u0534":"D","\u0535":"E","\u0536":"Z","\u0537":"E'","\u0538":"Y'","\u0539":"T'","\u053A":"JH","\u053B":"I","\u053C":"L","\u053D":"X","\u053E":"C'","\u053F":"K","\u0540":"H","\u0541":"D'","\u0542":"GH","\u0543":"TW","\u0544":"M","\u0545":"Y","\u0546":"N","\u0547":"SH","\u0549":"CH","\u054A":"P","\u054B":"J","\u054C":"R'","\u054D":"S","\u054E":"V","\u054F":"T","\u0550":"R","\u0551":"C","\u0553":"P'","\u0554":"Q'","\u0555":"O''","\u0556":"F","\u0587":"EV","\u0621":"a","\u0622":"aa","\u0623":"a","\u0624":"u","\u0625":"i","\u0626":"e","\u0627":"a","\u0628":"b","\u0629":"h","\u062A":"t","\u062B":"th","\u062C":"j","\u062D":"h","\u062E":"kh","\u062F":"d","\u0630":"th","\u0631":"r","\u0632":"z","\u0633":"s","\u0634":"sh","\u0635":"s","\u0636":"dh","\u0637":"t","\u0638":"z","\u0639":"a","\u063A":"gh","\u0641":"f","\u0642":"q","\u0643":"k","\u0644":"l","\u0645":"m","\u0646":"n","\u0647":"h","\u0648":"w","\u0649":"a","\u064A":"y","\u064B":"an","\u064C":"on","\u064D":"en","\u064E":"a","\u064F":"u","\u0650":"e","\u0652":"","\u0660":"0","\u0661":"1","\u0662":"2","\u0663":"3","\u0664":"4","\u0665":"5","\u0666":"6","\u0667":"7","\u0668":"8","\u0669":"9","\u067E":"p","\u0686":"ch","\u0698":"zh","\u06A9":"k","\u06AF":"g","\u06CC":"y","\u06F0":"0","\u06F1":"1","\u06F2":"2","\u06F3":"3","\u06F4":"4","\u06F5":"5","\u06F6":"6","\u06F7":"7","\u06F8":"8","\u06F9":"9","\u0E3F":"baht","\u10D0":"a","\u10D1":"b","\u10D2":"g","\u10D3":"d","\u10D4":"e","\u10D5":"v","\u10D6":"z","\u10D7":"t","\u10D8":"i","\u10D9":"k","\u10DA":"l","\u10DB":"m","\u10DC":"n","\u10DD":"o","\u10DE":"p","\u10DF":"zh","\u10E0":"r","\u10E1":"s","\u10E2":"t","\u10E3":"u","\u10E4":"f","\u10E5":"k","\u10E6":"gh","\u10E7":"q","\u10E8":"sh","\u10E9":"ch","\u10EA":"ts","\u10EB":"dz","\u10EC":"ts","\u10ED":"ch","\u10EE":"kh","\u10EF":"j","\u10F0":"h","\u1E62":"S","\u1E63":"s","\u1E80":"W","\u1E81":"w","\u1E82":"W","\u1E83":"w","\u1E84":"W","\u1E85":"w","\u1E9E":"SS","\u1EA0":"A","\u1EA1":"a","\u1EA2":"A","\u1EA3":"a","\u1EA4":"A","\u1EA5":"a","\u1EA6":"A","\u1EA7":"a","\u1EA8":"A","\u1EA9":"a","\u1EAA":"A","\u1EAB":"a","\u1EAC":"A","\u1EAD":"a","\u1EAE":"A","\u1EAF":"a","\u1EB0":"A","\u1EB1":"a","\u1EB2":"A","\u1EB3":"a","\u1EB4":"A","\u1EB5":"a","\u1EB6":"A","\u1EB7":"a","\u1EB8":"E","\u1EB9":"e","\u1EBA":"E","\u1EBB":"e","\u1EBC":"E","\u1EBD":"e","\u1EBE":"E","\u1EBF":"e","\u1EC0":"E","\u1EC1":"e","\u1EC2":"E","\u1EC3":"e","\u1EC4":"E","\u1EC5":"e","\u1EC6":"E","\u1EC7":"e","\u1EC8":"I","\u1EC9":"i","\u1ECA":"I","\u1ECB":"i","\u1ECC":"O","\u1ECD":"o","\u1ECE":"O","\u1ECF":"o","\u1ED0":"O","\u1ED1":"o","\u1ED2":"O","\u1ED3":"o","\u1ED4":"O","\u1ED5":"o","\u1ED6":"O","\u1ED7":"o","\u1ED8":"O","\u1ED9":"o","\u1EDA":"O","\u1EDB":"o","\u1EDC":"O","\u1EDD":"o","\u1EDE":"O","\u1EDF":"o","\u1EE0":"O","\u1EE1":"o","\u1EE2":"O","\u1EE3":"o","\u1EE4":"U","\u1EE5":"u","\u1EE6":"U","\u1EE7":"u","\u1EE8":"U","\u1EE9":"u","\u1EEA":"U","\u1EEB":"u","\u1EEC":"U","\u1EED":"u","\u1EEE":"U","\u1EEF":"u","\u1EF0":"U","\u1EF1":"u","\u1EF2":"Y","\u1EF3":"y","\u1EF4":"Y","\u1EF5":"y","\u1EF6":"Y","\u1EF7":"y","\u1EF8":"Y","\u1EF9":"y","\u2013":"-","\u2018":"'","\u2019":"'","\u201C":"\\"","\u201D":"\\"","\u201E":"\\"","\u2020":"+","\u2022":"*","\u2026":"...","\u20A0":"ecu","\u20A2":"cruzeiro","\u20A3":"french franc","\u20A4":"lira","\u20A5":"mill","\u20A6":"naira","\u20A7":"peseta","\u20A8":"rupee","\u20A9":"won","\u20AA":"new shequel","\u20AB":"dong","\u20AC":"euro","\u20AD":"kip","\u20AE":"tugrik","\u20AF":"drachma","\u20B0":"penny","\u20B1":"peso","\u20B2":"guarani","\u20B3":"austral","\u20B4":"hryvnia","\u20B5":"cedi","\u20B8":"kazakhstani tenge","\u20B9":"indian rupee","\u20BA":"turkish lira","\u20BD":"russian ruble","\u20BF":"bitcoin","\u2120":"sm","\u2122":"tm","\u2202":"d","\u2206":"delta","\u2211":"sum","\u221E":"infinity","\u2665":"love","\u5143":"yuan","\u5186":"yen","\uFDFC":"rial","\uFEF5":"laa","\uFEF7":"laa","\uFEF9":"lai","\uFEFB":"la"}`);
-      var locales = JSON.parse('{"bg":{"\u0419":"Y","\u0426":"Ts","\u0429":"Sht","\u042A":"A","\u042C":"Y","\u0439":"y","\u0446":"ts","\u0449":"sht","\u044A":"a","\u044C":"y"},"de":{"\xC4":"AE","\xE4":"ae","\xD6":"OE","\xF6":"oe","\xDC":"UE","\xFC":"ue","\xDF":"ss","%":"prozent","&":"und","|":"oder","\u2211":"summe","\u221E":"unendlich","\u2665":"liebe"},"es":{"%":"por ciento","&":"y","<":"menor que",">":"mayor que","|":"o","\xA2":"centavos","\xA3":"libras","\xA4":"moneda","\u20A3":"francos","\u2211":"suma","\u221E":"infinito","\u2665":"amor"},"fr":{"%":"pourcent","&":"et","<":"plus petit",">":"plus grand","|":"ou","\xA2":"centime","\xA3":"livre","\xA4":"devise","\u20A3":"franc","\u2211":"somme","\u221E":"infini","\u2665":"amour"},"pt":{"%":"porcento","&":"e","<":"menor",">":"maior","|":"ou","\xA2":"centavo","\u2211":"soma","\xA3":"libra","\u221E":"infinito","\u2665":"amor"},"uk":{"\u0418":"Y","\u0438":"y","\u0419":"Y","\u0439":"y","\u0426":"Ts","\u0446":"ts","\u0425":"Kh","\u0445":"kh","\u0429":"Shch","\u0449":"shch","\u0413":"H","\u0433":"h"},"vi":{"\u0110":"D","\u0111":"d"},"da":{"\xD8":"OE","\xF8":"oe","\xC5":"AA","\xE5":"aa","%":"procent","&":"og","|":"eller","$":"dollar","<":"mindre end",">":"st\xF8rre end"},"nb":{"&":"og","\xC5":"AA","\xC6":"AE","\xD8":"OE","\xE5":"aa","\xE6":"ae","\xF8":"oe"},"it":{"&":"e"},"nl":{"&":"en"},"sv":{"&":"och","\xC5":"AA","\xC4":"AE","\xD6":"OE","\xE5":"aa","\xE4":"ae","\xF6":"oe"}}');
-      function replace(string, options) {
-        if (typeof string !== "string") {
-          throw new Error("slugify: string argument expected");
-        }
-        options = typeof options === "string" ? { replacement: options } : options || {};
-        var locale = locales[options.locale] || {};
-        var replacement = options.replacement === void 0 ? "-" : options.replacement;
-        var trim = options.trim === void 0 ? true : options.trim;
-        var slug = string.normalize().split("").reduce(function(result, ch) {
-          var appendChar = locale[ch];
-          if (appendChar === void 0) appendChar = charMap[ch];
-          if (appendChar === void 0) appendChar = ch;
-          if (appendChar === replacement) appendChar = " ";
-          return result + appendChar.replace(options.remove || /[^\w\s$*_+~.()'"!\-:@]+/g, "");
-        }, "");
-        if (options.strict) {
-          slug = slug.replace(/[^A-Za-z0-9\s]/g, "");
-        }
-        if (trim) {
-          slug = slug.trim();
-        }
-        slug = slug.replace(/\s+/g, replacement);
-        if (options.lower) {
-          slug = slug.toLowerCase();
-        }
-        return slug;
-      }
-      replace.extend = function(customMap) {
-        Object.assign(charMap, customMap);
-      };
-      return replace;
-    });
-  }
-});
-
 // src/index.ts
-var core4 = __toESM(require_core());
-var github4 = __toESM(require_github());
+var core4 = __toESM(require_core(), 1);
+var github4 = __toESM(require_github(), 1);
 
-// ../ci-sdk/dist/index.mjs
-var import_slugify = __toESM(require_slugify(), 1);
+// ../ci-sdk/dist/index.js
 var __defProp2 = Object.defineProperty;
 var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
 function sleep(ms) {
@@ -23142,10 +23099,6 @@ function pluralize(count) {
   return count === 1 ? "" : "s";
 }
 __name(pluralize, "pluralize");
-function getBackoffMs(attemptNumber, minWaitMs = 1e3, maxWaitMs = 1e4) {
-  return Math.min(maxWaitMs, minWaitMs * 1.2 ** attemptNumber);
-}
-__name(getBackoffMs, "getBackoffMs");
 var buildFetchWithTimeout = /* @__PURE__ */ __name((fetch, timeout) => async (...args) => fetch(args[0], {
   ...args[1],
   signal: AbortSignal.timeout(timeout)
@@ -23163,8 +23116,50 @@ var defaultLogDriver = {
   }
 };
 var defaultServiceBase = "https://app.qawolf.com/";
-var version2 = "0.23.1";
-var defaultUserAgent = `ci-sdk/${version2}`;
+var package_default = {
+  name: "@qawolf/ci-sdk",
+  version: "1.0.1",
+  private: false,
+  description: "A simple SDK for interacting with QAWolf in CI scripts.",
+  keywords: [],
+  license: "MIT",
+  author: "Jules Sam. Randolph<jules@qawolf.com>",
+  type: "module",
+  exports: {
+    ".": {
+      types: "./dist/index.d.ts",
+      require: "./dist/index.cjs",
+      import: "./dist/index.js",
+      default: "./dist/index.js"
+    }
+  },
+  files: [
+    "/dist",
+    "/README.md"
+  ],
+  scripts: {
+    build: "tsup src/index.ts --format esm,cjs --dts --clean --splitting --treeshake --sourcemap --outDir dist --target es2022",
+    lint: "cycle-import-scan . && eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --quiet && prettier --check .",
+    "lint:fix": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
+    "lint:warnings": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx",
+    prepublishOnly: "nx run ci-sdk:build",
+    test: 'NODE_OPTIONS="--experimental-vm-modules" NODE_NO_WARNINGS=1 jest',
+    "tsc:check": "tsc --noEmit"
+  },
+  dependencies: {
+    "@qawolf/ci-utils": "^1.0.0",
+    "@sinonjs/fake-timers": "^10.3.0",
+    slugify: "^1.6.6",
+    tslib: "^2.6.2"
+  },
+  devDependencies: {
+    tsup: "8.3.5"
+  },
+  engines: {
+    node: ">=20"
+  }
+};
+var defaultUserAgent = `ci-sdk/${package_default.version}`;
 async function logFetchError({ log, methodName, response }) {
   if (response.ok) return;
   const { eventId, failureMessage } = await (async () => {
@@ -23464,499 +23459,6 @@ async function generateSignedUrlForTempTeamStorage(deps, apiConfig, config) {
   };
 }
 __name(generateSignedUrlForTempTeamStorage, "generateSignedUrlForTempTeamStorage");
-var qawolfBaseUrl = "https://app.qawolf.com";
-var qawolfGraphQLEndpoint = `${qawolfBaseUrl}/api/graphql`;
-var previewDeploymentType = "qawolf-preview";
-async function createEnvironmentVariables(deps, apiConfig, { environmentId, variables }) {
-  const environmentVariableRequests = Object.keys(variables).map(async (key) => {
-    const value = variables[key];
-    return deps.fetch(qawolfGraphQLEndpoint, {
-      body: JSON.stringify({
-        query: `
-            mutation UpsertEnvironmentVariable($environmentId: ID!, $value: String!, $name: String) {
-              upsertEnvironmentVariable(environmentId: $environmentId, value: $value, name: $name) {
-                id
-              }
-            }
-          `,
-        variables: {
-          environmentId,
-          name: key,
-          value
-        }
-      }),
-      headers: {
-        Authorization: `Bearer ${apiConfig.apiKey}`,
-        "Content-Type": "application/json"
-      },
-      method: "post"
-    });
-  });
-  await Promise.all(environmentVariableRequests);
-}
-__name(createEnvironmentVariables, "createEnvironmentVariables");
-async function findOrCreateEnvironment(deps, apiConfig, { baseEnvironmentId, branch, pr, qaWolfTeamId }) {
-  const retrievalResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-      query Environments($where: EnvironmentWhereInput) {
-        environments(where: $where) {
-          id
-        }
-      }
-      `,
-      variables: {
-        where: {
-          deletedAt: {
-            equals: null
-          },
-          name: {
-            equals: pr ? `[PR] #${pr.number} - ${pr.title}` : `[Preview] ${branch}`
-          }
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const jsonResponse = await retrievalResponse.json();
-  if (jsonResponse.data.environments[0]) {
-    const environmentId = jsonResponse.data.environments[0].id;
-    deps.log.info(`Environment already exists with ID: ${environmentId}`);
-    return environmentId;
-  }
-  const creationResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      operationName: "createEnvironment",
-      query: `
-        mutation createEnvironment($name: String!, $teamId: String!) {
-          createEnvironment(name: $name, teamId: $teamId) {
-            id
-            branchId
-          }
-        }
-      `,
-      variables: {
-        name: pr ? `[PR] #${pr.number} - ${pr.title}` : `[Preview] ${branch}`,
-        teamId: qaWolfTeamId
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const createionResponseJson = await creationResponse.json();
-  deps.log.info(`Environment response: ${JSON.stringify(createionResponseJson)}`);
-  if (!createionResponseJson.data.createEnvironment.id) throw Error("Environment ID not found in response");
-  const multiBranchResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query teamBranches($teamId: String!) {
-          teamBranches: activeTeamBranches(teamId: $teamId) {
-            id
-            environments{
-              id
-            }
-          }
-        }
-      `,
-      variables: {
-        teamId: qaWolfTeamId
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const multiBranchResponseJson = await multiBranchResponse.json();
-  const hasMultipleBranches = multiBranchResponseJson.data.teamBranches.length > 1;
-  if (!hasMultipleBranches) return createionResponseJson.data.createEnvironment.id;
-  const sourceEnvironmentResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query EnvironmentWithBranch($where: EnvironmentWhereUniqueInput!) {
-          environment(where: $where) {
-            id
-            branchId
-          }
-        }
-      `,
-      variables: {
-        where: {
-          id: baseEnvironmentId
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const sourceEnvironmentJson = await sourceEnvironmentResponse.json();
-  const baseBranchId = sourceEnvironmentJson.data.environment.branchId;
-  const targetBranchId = createionResponseJson.data.createEnvironment.branchId;
-  if (!baseBranchId) throw Error("Base branch ID not found in response");
-  deps.log.info(`Promoting workflows from branch ${baseBranchId} to ${targetBranchId}`);
-  const promotionResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        mutation PromoteWorkflowsToBranch(
-          $sourceTeamBranchId: String!
-          $targetTeamBranchId: String!
-        ) {
-          promoteWorkflowsToBranch(
-            mergeStrategy: overwrite
-            sourceTeamBranchId: $sourceTeamBranchId
-            targetTeamBranchId: $targetTeamBranchId
-          )
-        }
-      `,
-      variables: {
-        sourceTeamBranchId: baseBranchId,
-        targetTeamBranchId: targetBranchId
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const promotionResponseJson = await promotionResponse.json();
-  if (!promotionResponseJson) throw Error("Promotion failed");
-  return createionResponseJson.data.createEnvironment.id;
-}
-__name(findOrCreateEnvironment, "findOrCreateEnvironment");
-async function findOrCreateTrigger(deps, apiConfig, args) {
-  const { branch, environmentId, pr, qaWolfTeamId, repositoryId, tags } = args;
-  const triggerName = `Deployments of ${pr ? `PR #${pr.number} - ${pr.title}` : `branch ${branch}`}`;
-  const retrievalResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `query getTriggersForBranch($where: TriggerWhereInput) {
-        triggers(where: $where) {
-          environment_id
-          id
-        }
-      }
-      `,
-      variables: {
-        where: {
-          environment_id: {
-            equals: environmentId
-          },
-          name: {
-            equals: triggerName
-          }
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const retrievalResponseJson = await retrievalResponse.json();
-  if (retrievalResponseJson.data.triggers[0]) {
-    const triggerId2 = retrievalResponseJson.data.triggers[0].id;
-    const environmentId2 = retrievalResponseJson.data.triggers[0].environment_id;
-    deps.log.info(`Trigger with name ${triggerName} already exists with id ${triggerId2} in environment ${environmentId2}`);
-    return triggerId2;
-  }
-  const creationResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      operationName: "createTrigger",
-      query: `
-        mutation createTrigger(
-          $codeHostingServiceRepositoryId: ID!,
-          $deploymentBranches: String!,
-          $deploymentEnvironment: String!,
-          $deploymentProvider: String!,
-          $environmentId: ID!,
-          $name: String!,
-          $teamId: ID!,
-          $tag_ids: [ID!]
-        ) {
-          createTrigger(
-            codeHostingServiceRepositoryId: $codeHostingServiceRepositoryId,
-            deployment_branches: $deploymentBranches,
-            deployment_environment: $deploymentEnvironment,
-            deployment_provider: $deploymentProvider,
-            environment_id: $environmentId,
-            name: $name,
-            team_id: $teamId,
-            tag_ids: $tag_ids
-          ) {
-            id
-            __typename
-          }
-        }
-      `,
-      variables: {
-        codeHostingServiceRepositoryId: repositoryId,
-        deploymentBranches: branch,
-        deploymentEnvironment: previewDeploymentType,
-        deploymentProvider: "generic",
-        environmentId,
-        name: triggerName,
-        tag_ids: tags?.map((tag) => tag.id),
-        teamId: qaWolfTeamId
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const creationResponseJson = await creationResponse.json();
-  deps.log.info(`Trigger response: ${JSON.stringify(creationResponseJson)}`);
-  const triggerId = creationResponseJson.data?.createTrigger?.id;
-  if (!triggerId) throw Error("Trigger ID not found in response");
-  deps.log.info(`Trigger created with ID: ${triggerId}`);
-  return triggerId;
-}
-__name(findOrCreateTrigger, "findOrCreateTrigger");
-async function findRepositoryIdByName(deps, apiConfig, { headRepoFullName }) {
-  const response = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query codeHostingServiceRepositories($where: CodeHostingServiceRepositoryWhereInput) {
-          codeHostingServiceRepositories(where: $where) {
-            id
-          }
-        }
-      `,
-      variables: {
-        where: {
-          externalFullName: {
-            equals: headRepoFullName
-          }
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const responseJson = await response.json();
-  deps.log.info(`Repository response: ${JSON.stringify(responseJson)}`);
-  const repositories = responseJson.data.codeHostingServiceRepositories;
-  if (!repositories[0]) return;
-  return repositories[0].id;
-}
-__name(findRepositoryIdByName, "findRepositoryIdByName");
-async function getEnvironmentVariablesFromEnvironment(deps, apiConfig, { environmentId }) {
-  const retrievalResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query EnvironmentVariables($where: EnvironmentWhereUniqueInput!) {
-          environment(where: $where) {
-            id
-            variablesJSON
-          }
-        }
-      `,
-      variables: {
-        where: {
-          id: environmentId
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const retrievalResponseJson = await retrievalResponse.json();
-  if (!retrievalResponseJson.data.environment) {
-    throw Error(`Environment not found with ID: ${environmentId}. Please check the environment ID is correct.`);
-  }
-  return JSON.parse(retrievalResponseJson.data.environment.variablesJSON);
-}
-__name(getEnvironmentVariablesFromEnvironment, "getEnvironmentVariablesFromEnvironment");
-async function getTagsFromGenericTriggerInEnvironment(deps, apiConfig, { environmentId }) {
-  const retrievalResponse = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query GenericTriggerTagsFromEnvironment($where: EnvironmentWhereUniqueInput!) {
-          environment(where: $where) {
-            id
-            triggers(where: {deployment_provider: {equals: "generic"}}) {
-              id
-              tags {
-                id
-                name
-              }
-            }
-          }
-        }
-      `,
-      variables: {
-        where: {
-          id: environmentId
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const retrievalResponseJson = await retrievalResponse.json();
-  if (!retrievalResponseJson.data.environment) {
-    throw Error(`Environment not found with ID: ${environmentId}. Please check the environment ID is correct.`);
-  }
-  return retrievalResponseJson.data.environment.triggers[0]?.tags?.map((tag) => tag);
-}
-__name(getTagsFromGenericTriggerInEnvironment, "getTagsFromGenericTriggerInEnvironment");
-var createEnvironmentAction = /* @__PURE__ */ __name(async (deps, apiConfig, { baseEnvironmentId, branch, deploymentUrl, headRepoFullName, pr, qaWolfTeamId, variables }) => {
-  deps.log.info("Creating environment for pull request...");
-  const environmentId = await findOrCreateEnvironment(deps, apiConfig, {
-    baseEnvironmentId,
-    branch,
-    pr,
-    qaWolfTeamId
-  });
-  deps.log.info(`Environment created with ID: ${environmentId}`);
-  const baseEnvironmentVariablesJSON = baseEnvironmentId ? await getEnvironmentVariablesFromEnvironment(deps, apiConfig, {
-    environmentId: baseEnvironmentId
-  }) : {};
-  if (typeof baseEnvironmentVariablesJSON !== "object") {
-    deps.log.error("baseEnvironmentVariablesJSON is not an object");
-    throw Error("baseEnvironmentVariablesJSON is not an object");
-  }
-  const combinedEnvironmentVariables = {
-    ...baseEnvironmentVariablesJSON,
-    ...variables,
-    ...deploymentUrl ? {
-      URL: deploymentUrl
-    } : {}
-  };
-  deps.log.info("Creating environment variables...");
-  await createEnvironmentVariables(deps, apiConfig, {
-    environmentId,
-    variables: combinedEnvironmentVariables
-  });
-  deps.log.info(`Environment variables created for environment ID: ${environmentId}`);
-  deps.log.info("Retrieving repository ID...");
-  const repositoryId = await findRepositoryIdByName(deps, apiConfig, {
-    headRepoFullName
-  });
-  deps.log.info(repositoryId ? `Repository ID retrieved: ${repositoryId}` : "Repository not integrated with QA Wolf, enable it in the settings page to get PR comments and checks.");
-  const tags = baseEnvironmentId ? await getTagsFromGenericTriggerInEnvironment(deps, apiConfig, {
-    environmentId: baseEnvironmentId
-  }) : void 0;
-  deps.log.info(`Tags retrieved: ${tags?.map((tag) => tag.name).join(", ")}`);
-  deps.log.info("Creating trigger for deployment...");
-  await findOrCreateTrigger(deps, apiConfig, {
-    branch,
-    environmentId,
-    pr,
-    qaWolfTeamId,
-    repositoryId,
-    tags
-  });
-}, "createEnvironmentAction");
-async function deleteEnvironment(deps, apiConfig, { environmentId }) {
-  await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        mutation deleteEnvironment($environmentId: ID!) {
-          deleteEnvironment(environment_id: $environmentId) {
-            id
-          }
-        }
-      `,
-      variables: {
-        environmentId
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  deps.log.info(`Environment deleted with ID: ${environmentId}`);
-}
-__name(deleteEnvironment, "deleteEnvironment");
-async function getEnvironmentIdForBranch(deps, apiConfig, branch) {
-  const response = await deps.fetch(qawolfGraphQLEndpoint, {
-    body: JSON.stringify({
-      query: `
-        query getTriggersForBranch($where: TriggerWhereInput) {
-          triggers(where: $where) {
-            id
-            environment_id
-          }
-        }
-      `,
-      variables: {
-        where: {
-          deployment_branches: {
-            contains: branch
-          }
-        }
-      }
-    }),
-    headers: {
-      Authorization: `Bearer ${apiConfig.apiKey}`,
-      "Content-Type": "application/json"
-    },
-    method: "post"
-  });
-  const responseJson = await response.json();
-  deps.log.info(`Trigger response: ${JSON.stringify(responseJson)}`);
-  const triggers = responseJson.data.triggers;
-  if (!triggers || !triggers[0]) throw Error(`No environment found for branch: ${branch}`);
-  return triggers[0].environment_id;
-}
-__name(getEnvironmentIdForBranch, "getEnvironmentIdForBranch");
-var deleteEnvironmentAction = /* @__PURE__ */ __name(async (deps, apiConfig, { branch }) => {
-  deps.log.info("Retrieving environment ID for deletion...");
-  const environmentId = await getEnvironmentIdForBranch(deps, apiConfig, branch);
-  deps.log.info(`Deleting environment with ID: ${environmentId}`);
-  await deleteEnvironment(deps, apiConfig, {
-    environmentId
-  });
-}, "deleteEnvironmentAction");
-async function testPreview(deps, apiConfig, config) {
-  await createEnvironmentAction(deps, apiConfig, {
-    baseEnvironmentId: config.baseEnvironmentId,
-    branch: config.branch,
-    deploymentUrl: config.deploymentUrl,
-    headRepoFullName: config.repoFullName,
-    pr: config.pr,
-    qaWolfTeamId: config.qaWolfTeamId,
-    variables: config.variables
-  });
-  return attemptNotifyDeploy(deps, apiConfig, {
-    branch: config.branch,
-    commitUrl: config.commitUrl,
-    deploymentType: previewDeploymentType,
-    deploymentUrl: config.deploymentUrl,
-    sha: config.sha,
-    variables: config.variables
-  });
-}
-__name(testPreview, "testPreview");
-async function removeEnvironment(deps, apiConfig, config) {
-  await deleteEnvironmentAction(deps, apiConfig, config);
-}
-__name(removeEnvironment, "removeEnvironment");
 async function fetchCiGreenlightStatus({ apiKey, serviceBase, userAgent }, { runId }, { fetch: localFetch, log }) {
   try {
     const resp = await localFetch(new URL(`/api/v0/ci-greenlight/${encodeURIComponent(runId)}`, serviceBase), {
@@ -24153,483 +23655,6 @@ ${urlInfo}`);
   };
 }
 __name(pollCiGreenlightStatus, "pollCiGreenlightStatus");
-var GraphQLBadResponseError = class GraphQLBadResponseError2 extends Error {
-  static {
-    __name(this, "GraphQLBadResponseError");
-  }
-  constructor(message) {
-    super(message);
-    this.name = "GraphQLBadResponseError";
-  }
-};
-function mapErrorCodeToAbortReason({ errorCode, log }) {
-  switch (errorCode) {
-    case "BAD_USER_INPUT":
-      return "invalid-input";
-    case "FORBIDDEN":
-      return "forbidden";
-    case "INTERNAL":
-      return "server-error";
-    case "UNAUTHENTICATED":
-      return "unauthenticated";
-    default:
-      log.error(`Unknown error code. ${errorCode}`);
-      return "server-error";
-  }
-}
-__name(mapErrorCodeToAbortReason, "mapErrorCodeToAbortReason");
-async function qawolfGraphql({ apiConfig: { apiKey, serviceBase, userAgent }, deps: { fetch: localFetch, log }, name, query: queryGql, variables }) {
-  try {
-    const response = await localFetch(new URL(`/api/graphql`, serviceBase), {
-      body: JSON.stringify({
-        query: queryGql,
-        variables
-      }),
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "User-Agent": userAgent
-      },
-      method: "post"
-    });
-    let rawBody;
-    try {
-      rawBody = await response.json();
-    } catch (e) {
-      throw new GraphQLBadResponseError(`[GraphQL] Unexpected response schema. Not valid JSON body.`);
-    }
-    if ("errors" in rawBody) {
-      for (const error2 of rawBody.errors) log.warn(`\u274C [GraphQL] error: ${error2.message}`);
-      const firstError = rawBody.errors[0];
-      const eventId = firstError?.extensions?.eventId;
-      const errorCode = firstError?.extensions?.code;
-      return {
-        abortReason: mapErrorCodeToAbortReason({
-          errorCode,
-          log
-        }),
-        eventId,
-        isGqlError: true
-      };
-    }
-    if (!("data" in rawBody)) {
-      throw new GraphQLBadResponseError(`[GraphQL] Unexpected response schema. Missing 'data' in response body. This is a bug.`);
-    }
-    if (!(name in rawBody.data)) {
-      throw new GraphQLBadResponseError(`[GraphQL] Unexpected response schema. Missing 'data.${name}' in response body. This is a bug.`);
-    }
-    return {
-      isGqlError: false,
-      responseBody: rawBody.data[name]
-    };
-  } catch (e) {
-    if (e instanceof GraphQLBadResponseError) throw e;
-    log.error(`\u274C [GraphQL] network error: ${e instanceof Error ? e.message : e}`);
-    return {
-      abortReason: "network-error",
-      isGqlError: true
-    };
-  }
-}
-__name(qawolfGraphql, "qawolfGraphql");
-function logGraphQLError({ log, methodName, payload }) {
-  const eventIdSuffix = payload.eventId ? ` (Event ID: ${payload.eventId})` : "";
-  switch (payload.abortReason) {
-    case "forbidden":
-      log.error(`\u274C [${methodName}] Forbidden. Aborting${eventIdSuffix}`);
-      break;
-    case "invalid-input":
-      log.error(`\u274C [${methodName}] Bad GraphQL input. This is a bug. Aborting${eventIdSuffix}`);
-      break;
-    case "network-error":
-      log.error(`\u274C [${methodName}] Network error. Aborting${eventIdSuffix}`);
-      break;
-    case "server-error":
-      log.error(`\u274C [${methodName}] Server error. Aborting${eventIdSuffix}`);
-      break;
-    case "unauthenticated":
-      log.error(`\u274C [${methodName}] Unauthenticated. Aborting${eventIdSuffix}`);
-      break;
-    default:
-      payload.abortReason;
-      log.error(`\u274C [${methodName}] Unknown error. ${payload.abortReason} This is a bug${eventIdSuffix}`);
-  }
-}
-__name(logGraphQLError, "logGraphQLError");
-var mutationName = "notifyVCSBranchMergeCanceled";
-var mutationGql = `
-mutation NotifyVCSBranchMergeCanceled($headEnvironmentAlias: String!) {
-  ${mutationName}(headEnvironmentAlias: $headEnvironmentAlias) {
-    outcome
-    failureCode
-    failureDetails
-  }
-}`;
-async function callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, { headEnvironmentAlias }) {
-  return qawolfGraphql({
-    apiConfig,
-    deps,
-    name: mutationName,
-    query: mutationGql,
-    variables: {
-      headEnvironmentAlias
-    }
-  });
-}
-__name(callNotifyVCSBranchMergeCanceledMutation, "callNotifyVCSBranchMergeCanceledMutation");
-function domainFailureToAbortResult({ log, methodName, result }) {
-  switch (result.failureCode) {
-    case "base-environment-not-found":
-      log.error(`\u274C [${methodName}] Base environment not found. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "base-trigger-not-found":
-      log.error(`\u274C [${methodName}] Base trigger not found. A QA Wolf representative should set this up for you. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "head-environment-not-found":
-      log.error(`\u274C [${methodName}] Head environment not found. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "head-trigger-not-found":
-      log.error(`\u274C [${methodName}] Head trigger not found. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "invalid-input":
-      log.error(`\u274C [${methodName}] Invalid input: ${result.failureDetails} Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "non-ephemeral-head-environment-violation":
-      log.error(`\u274C [${methodName}] Non-ephemeral head environment violation. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "repository-not-found":
-      log.error(`\u274C [${methodName}] Repository not found: ${result.failureDetails} Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    case "run-creation-failed":
-      log.error(`\u274C [${methodName}] Run creation failed: ${result.failureDetails}. Aborting.`);
-      return {
-        abortReason: result.failureCode,
-        outcome: "aborted"
-      };
-    default:
-      result.failureCode;
-      throw Error(`[${methodName}] Unreachable code detected. This is a bug. ${result.failureCode}`);
-  }
-}
-__name(domainFailureToAbortResult, "domainFailureToAbortResult");
-async function retryWithExponentialBackoff({ log, maxRetries, methodName, retriableAbortReasons, runOnce }) {
-  let attemptNumber = 0;
-  let result;
-  do {
-    attemptNumber++;
-    log.info(`\u{1F501} [${methodName}] Attempt ${attemptNumber}/${maxRetries + 1}.`);
-    result = await runOnce();
-    if (result.outcome === "success" || !retriableAbortReasons.includes(result.abortReason)) return result;
-    if (attemptNumber >= maxRetries + 1) return result;
-    const backoffMs = getBackoffMs(attemptNumber);
-    const secondsApproximation = (backoffMs / 1e3).toFixed(1);
-    log.warn(`\u23F3 [${methodName}] Retrying in ${secondsApproximation} seconds.`);
-    await sleep(backoffMs);
-  } while (true);
-}
-__name(retryWithExponentialBackoff, "retryWithExponentialBackoff");
-async function runNotifyVCSMergeCanceledOnce(deps, apiConfig, input) {
-  const log = deps.log;
-  const { headEnvironmentAlias } = input;
-  const resp = await callNotifyVCSBranchMergeCanceledMutation(deps, apiConfig, {
-    headEnvironmentAlias
-  });
-  if (resp.isGqlError) {
-    logGraphQLError({
-      log,
-      methodName: "notifyVCSBranchMergeCanceled",
-      payload: resp
-    });
-    return {
-      abortReason: resp.abortReason,
-      eventId: resp.eventId,
-      outcome: "aborted"
-    };
-  }
-  const result = resp.responseBody;
-  if (result.outcome === "success") {
-    log.info(`\u2705 [notifyVCSBranchMergeCanceled] Successfully notified the CI system that the merge was canceled.`);
-    return {
-      outcome: "success"
-    };
-  }
-  result.outcome;
-  return domainFailureToAbortResult({
-    log,
-    methodName: "notifyVCSBranchMergeCanceled",
-    result
-  });
-}
-__name(runNotifyVCSMergeCanceledOnce, "runNotifyVCSMergeCanceledOnce");
-async function notifyVCSBranchMergeCanceled(deps, apiConfig, input) {
-  const { maxRetries = 10 } = input;
-  return retryWithExponentialBackoff({
-    log: deps.log,
-    maxRetries,
-    methodName: "notifyVCSBranchMergeCanceled",
-    retriableAbortReasons: [
-      "network-error",
-      "server-error"
-    ],
-    runOnce: /* @__PURE__ */ __name(() => runNotifyVCSMergeCanceledOnce(deps, apiConfig, input), "runOnce")
-  });
-}
-__name(notifyVCSBranchMergeCanceled, "notifyVCSBranchMergeCanceled");
-var mutationName2 = "notifyVCSBranchMergeCompleted";
-var mutationGql2 = `
-mutation NotifyVCSBranchMergeCompleted($baseEnvironmentAlias: String, $headEnvironmentAlias: String!) {
-${mutationName2}(baseEnvironmentAlias: $baseEnvironmentAlias, headEnvironmentAlias: $headEnvironmentAlias) {
-    outcome
-    failureCode
-    failureDetails
-  }
-}`;
-async function callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, { baseEnvironmentAlias, headEnvironmentAlias }) {
-  return qawolfGraphql({
-    apiConfig,
-    deps,
-    name: mutationName2,
-    query: mutationGql2,
-    variables: {
-      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
-      headEnvironmentAlias
-    }
-  });
-}
-__name(callNotifyVCSBranchMergeCompletedMutation, "callNotifyVCSBranchMergeCompletedMutation");
-async function runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input) {
-  const log = deps.log;
-  const { baseEnvironmentsMapping, baseVcsBranch: vcsBaseBranch } = input;
-  const baseEnvironmentAlias = baseEnvironmentsMapping?.find((mapping) => mapping.vcsBranch === vcsBaseBranch)?.environmentAlias;
-  if (baseEnvironmentAlias === void 0) {
-    log.info(`\u2139\uFE0F [notifyVCSBranchMergeCompleted] Could not find a base environment for VCS branch '${vcsBaseBranch}'. Fall back to use the default base environment`);
-  }
-  const resp = await callNotifyVCSBranchMergeCompletedMutation(deps, apiConfig, {
-    baseEnvironmentAlias,
-    headEnvironmentAlias: input.headEnvironmentAlias
-  });
-  if (resp.isGqlError) {
-    logGraphQLError({
-      log,
-      methodName: "notifyVCSBranchMergeCompleted",
-      payload: resp
-    });
-    return {
-      abortReason: resp.abortReason,
-      eventId: resp.eventId,
-      outcome: "aborted"
-    };
-  }
-  const result = resp.responseBody;
-  if (result.outcome === "success") {
-    log.info(`\u2705 [notifyVCSBranchMergeCompleted] Successfully notified the CI system that the merge was completed.`);
-    return {
-      outcome: "success"
-    };
-  }
-  result.outcome;
-  return domainFailureToAbortResult({
-    log,
-    methodName: "notifyVCSBranchMergeCompleted",
-    result
-  });
-}
-__name(runNotifyVCSBranchMergeCompletedOnce, "runNotifyVCSBranchMergeCompletedOnce");
-async function notifyVCSBranchMergeCompleted(deps, apiConfig, input) {
-  const { maxRetries = 10 } = input;
-  return retryWithExponentialBackoff({
-    log: deps.log,
-    maxRetries,
-    methodName: "notifyVCSBranchMergeCompleted",
-    retriableAbortReasons: [
-      "network-error",
-      "server-error"
-    ],
-    runOnce: /* @__PURE__ */ __name(() => runNotifyVCSBranchMergeCompletedOnce(deps, apiConfig, input), "runOnce")
-  });
-}
-__name(notifyVCSBranchMergeCompleted, "notifyVCSBranchMergeCompleted");
-var mutationName3 = "notifyVCSBranchBuildDeployed";
-var mutationGql3 = `
-mutation NotifyVCSBranchBuildDeployed(
-  $headVcsCommitId: String!,
-  $baseVcsBranch: String,
-  $headEnvironmentVariablesJson: String!,
-  $baseEnvironmentAlias: String,
-  $headEnvironmentAlias: String!,
-  $concurrencyLimit: Int,
-  $headEnvironmentName: String,
-  $headVcsBranch: String,
-  $headVcsCommitUrl: String,
-  $pullOrMergeRequestNumber: Int
-) {
-    ${mutationName3}(
-      headVcsCommitId: $headVcsCommitId,
-      baseVcsBranch: $baseVcsBranch,
-      headEnvironmentVariablesJson: $headEnvironmentVariablesJson,
-      baseEnvironmentAlias: $baseEnvironmentAlias,
-      headEnvironmentAlias: $headEnvironmentAlias,
-      concurrencyLimit: $concurrencyLimit,
-      headEnvironmentName: $headEnvironmentName,
-      headVcsBranch: $headVcsBranch,
-      headVcsCommitUrl: $headVcsCommitUrl,
-      pullOrMergeRequestNumber: $pullOrMergeRequestNumber
-    ) {
-    outcome
-    codeHostingServiceInstallationPlatform
-    failureCode
-    failureDetails
-    runId
-  }
-}`;
-async function callNotifyVCSBranchBuildDeployedMutation(deps, apiConfig, { baseEnvironmentAlias, baseVcsBranch, concurrencyLimit, headEnvironmentAlias, headEnvironmentName, headEnvironmentVariables, headVcsBranch, headVcsCommitId, headVcsCommitUrl, pullOrMergeRequestNumber }) {
-  return qawolfGraphql({
-    apiConfig,
-    deps,
-    name: mutationName3,
-    query: mutationGql3,
-    variables: {
-      baseEnvironmentAlias: baseEnvironmentAlias ?? null,
-      baseVcsBranch: baseVcsBranch ?? null,
-      concurrencyLimit: concurrencyLimit ?? null,
-      headEnvironmentAlias,
-      headEnvironmentName,
-      headEnvironmentVariablesJson: JSON.stringify(headEnvironmentVariables),
-      headVcsBranch: headVcsBranch ?? null,
-      headVcsCommitId,
-      headVcsCommitUrl: headVcsCommitUrl ?? null,
-      pullOrMergeRequestNumber: pullOrMergeRequestNumber ?? null
-    }
-  });
-}
-__name(callNotifyVCSBranchBuildDeployedMutation, "callNotifyVCSBranchBuildDeployedMutation");
-async function runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input) {
-  const { baseEnvironmentsMapping, baseVcsBranch, concurrencyLimit, headEnvironmentAlias, headEnvironmentName, headEnvironmentVariables, headVcsBranch, headVcsCommitId, headVcsCommitUrl, pullOrMergeRequestNumber } = input;
-  const log = deps.log;
-  const baseEnvironmentAlias = baseEnvironmentsMapping?.find((mapping) => mapping.vcsBranch === baseVcsBranch)?.environmentAlias;
-  let finalConcurrencyLimit = concurrencyLimit;
-  if (typeof concurrencyLimit === "number") {
-    if (concurrencyLimit === Infinity) finalConcurrencyLimit = 0;
-    else if (Number.isNaN(concurrencyLimit) || !Number.isInteger(concurrencyLimit)) {
-      log.error(`\u274C [notifyVCSBranchBuildDeployed] Invalid concurrency limit '${concurrencyLimit}'. Must be a positive integer.`);
-      return {
-        abortReason: "invalid-input",
-        outcome: "aborted"
-      };
-    }
-    if (concurrencyLimit < 0) {
-      log.error(`\u274C [notifyVCSBranchBuildDeployed] Invalid concurrency limit '${concurrencyLimit}'. Must be a positive integer.`);
-      return {
-        abortReason: "invalid-input",
-        outcome: "aborted"
-      };
-    }
-  }
-  const resp = await callNotifyVCSBranchBuildDeployedMutation(deps, apiConfig, {
-    baseEnvironmentAlias,
-    baseVcsBranch,
-    concurrencyLimit: finalConcurrencyLimit,
-    headEnvironmentAlias,
-    headEnvironmentName,
-    headEnvironmentVariables,
-    headVcsBranch,
-    headVcsCommitId,
-    headVcsCommitUrl,
-    pullOrMergeRequestNumber
-  });
-  if (resp.isGqlError) {
-    logGraphQLError({
-      log,
-      methodName: "notifyVCSBranchBuildDeployed",
-      payload: resp
-    });
-    return {
-      abortReason: resp.abortReason,
-      eventId: resp.eventId,
-      outcome: "aborted"
-    };
-  }
-  const result = resp.responseBody;
-  if (result.outcome === "success") {
-    const codeHostingInfo = result.codeHostingServiceInstallationPlatform == null ? "" : `, and code hosting service integration '${result.codeHostingServiceInstallationPlatform}'.`;
-    log.info(`\u2705 [notifyVCSBranchBuildDeployed] Success. Run was deployed with ID: '${result.runId}'${codeHostingInfo}`);
-    return {
-      codeHostingServiceInstallationType: result.codeHostingServiceInstallationPlatform ?? void 0,
-      outcome: "success",
-      runId: result.runId
-    };
-  }
-  result.outcome;
-  return domainFailureToAbortResult({
-    log,
-    methodName: "notifyVCSBranchBuildDeployed",
-    result
-  });
-}
-__name(runNotifyVCSBranchBuildDeployedOnce, "runNotifyVCSBranchBuildDeployedOnce");
-async function notifyVCSBranchBuildDeployed(deps, apiConfig, input) {
-  const { maxRetries = 10 } = input;
-  return retryWithExponentialBackoff({
-    log: deps.log,
-    maxRetries,
-    methodName: "notifyVCSBranchBuildDeployed",
-    retriableAbortReasons: [
-      "network-error",
-      "server-error",
-      "run-creation-failed"
-    ],
-    runOnce: /* @__PURE__ */ __name(() => runNotifyVCSBranchBuildDeployedOnce(deps, apiConfig, input), "runOnce")
-  });
-}
-__name(notifyVCSBranchBuildDeployed, "notifyVCSBranchBuildDeployed");
-function pullRequestDetailsToEnvironmentAlias({ codeHostingServiceOrganization, codeHostingServiceRepositoryName, pullRequestIdentifier }) {
-  return arbitraryStringToEnvironmentAlias(`${codeHostingServiceOrganization}-${codeHostingServiceRepositoryName}-pr-${pullRequestIdentifier}`);
-}
-__name(pullRequestDetailsToEnvironmentAlias, "pullRequestDetailsToEnvironmentAlias");
-function arbitraryStringToEnvironmentAlias(arbitraryString) {
-  return (0, import_slugify.default)(arbitraryString, {
-    lower: true
-  });
-}
-__name(arbitraryStringToEnvironmentAlias, "arbitraryStringToEnvironmentAlias");
-function makeVCSBranchTestingSDK({ apiKey, serviceBase = defaultServiceBase, userAgent = defaultUserAgent }, { fetch = defaultFetch, log = defaultLogDriver } = {}) {
-  const deps = {
-    fetch,
-    log
-  };
-  const apiConfig = {
-    apiKey,
-    serviceBase,
-    userAgent
-  };
-  return {
-    notifyVCSBranchBuildDeployed: notifyVCSBranchBuildDeployed.bind(null, deps, apiConfig),
-    notifyVCSBranchMergeCanceled: notifyVCSBranchMergeCanceled.bind(null, deps, apiConfig),
-    notifyVCSBranchMergeCompleted: notifyVCSBranchMergeCompleted.bind(null, deps, apiConfig)
-  };
-}
-__name(makeVCSBranchTestingSDK, "makeVCSBranchTestingSDK");
 function makeQaWolfSdk({ apiKey, serviceBase = defaultServiceBase, userAgent = defaultUserAgent }, { fetch = defaultFetch, log = defaultLogDriver } = {}) {
   if (typeof fetch !== "function") {
     throw Error(`QA Wolf CI-SDK requires fetch to be defined. Make sure you are using NodeJS 18+, OR pass a fetch polyfill to the makeQaWolfSdk function.
@@ -24647,15 +23672,6 @@ We recommend 'undici' package for that purpose. See the Requirement section of o
   };
   return {
     attemptNotifyDeploy: attemptNotifyDeploy.bind(null, deps, apiConfig),
-    /**
-    * @deprecated Use `experimental_vcsBranchTesting` instead.
-    */
-    experimental_removeEnvironment: removeEnvironment.bind(null, deps, apiConfig),
-    /**
-    * @deprecated Use `experimental_vcsBranchTesting` instead.
-    */
-    experimental_testPreview: testPreview.bind(null, deps, apiConfig),
-    experimental_vcsBranchTesting: makeVCSBranchTestingSDK(apiConfig, deps),
     generateSignedUrlForRunInputsExecutablesStorage: generateSignedUrlForRunInputsExecutablesStorage.bind(null, deps, apiConfig),
     generateSignedUrlForTempTeamStorage: generateSignedUrlForTempTeamStorage.bind(null, deps, apiConfig),
     pollCiGreenlightStatus: pollCiGreenlightStatus.bind(null, deps, apiConfig)
@@ -24663,7 +23679,7 @@ We recommend 'undici' package for that purpose. See the Requirement section of o
 }
 __name(makeQaWolfSdk, "makeQaWolfSdk");
 
-// ../ci-utils/dist/index.mjs
+// ../ci-utils/dist/index.js
 var import_core = __toESM(require_core(), 1);
 
 // ../../node_modules/zod/lib/index.mjs
@@ -25481,11 +24497,11 @@ function datetimeRegex(args) {
   regex = `${regex}(${opts.join("|")})`;
   return new RegExp(`^${regex}$`);
 }
-function isValidIP(ip, version4) {
-  if ((version4 === "v4" || !version4) && ipv4Regex.test(ip)) {
+function isValidIP(ip, version2) {
+  if ((version2 === "v4" || !version2) && ipv4Regex.test(ip)) {
     return true;
   }
-  if ((version4 === "v6" || !version4) && ipv6Regex.test(ip)) {
+  if ((version2 === "v6" || !version2) && ipv6Regex.test(ip)) {
     return true;
   }
   return false;
@@ -28580,7 +27596,7 @@ var z = /* @__PURE__ */ Object.freeze({
   ZodError
 });
 
-// ../ci-utils/dist/index.mjs
+// ../ci-utils/dist/index.js
 var __defProp3 = Object.defineProperty;
 var __name2 = (target, value) => __defProp3(target, "name", { value, configurable: true });
 function stringifyUnknown(value) {
@@ -28635,15 +27651,43 @@ var jsonEnvironmentsMappingSchema = z.string().transform((str, ctx) => {
 }).pipe(environmentsMappingSchema);
 
 // package.json
-var version3 = "v1.1.4";
+var package_default2 = {
+  name: "@qawolf/notify-qawolf-on-deploy-action",
+  version: "v1.1.5",
+  type: "module",
+  main: "dist/index.js",
+  scripts: {
+    build: "rm -rf ./dist && node esbuild.mjs",
+    lint: "cycle-import-scan . && eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --quiet && prettier --check .",
+    "lint:fix": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
+    "lint:warnings": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx",
+    test: 'NODE_OPTIONS="--experimental-vm-modules" NODE_NO_WARNINGS=1 jest --passWithNoTests',
+    "test:watch": "npm run test -- --watch",
+    "tsc:check": "tsc"
+  },
+  dependencies: {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "@qawolf/ci-sdk": "*",
+    "@qawolf/ci-utils": "*",
+    tslib: "^2.6.2",
+    zod: "^3.23.8"
+  },
+  devDependencies: {
+    esbuild: "^0.25.5"
+  },
+  engines: {
+    node: "^20"
+  }
+};
 
 // src/extractRelevantDataFromEvent/index.ts
-var core2 = __toESM(require_core());
-var github2 = __toESM(require_github());
+var core2 = __toESM(require_core(), 1);
+var github2 = __toESM(require_github(), 1);
 
 // src/extractRelevantDataFromEvent/fetchPullRequestDataFromMergeGroupRef.ts
-var core = __toESM(require_core());
-var github = __toESM(require_github());
+var core = __toESM(require_core(), 1);
+var github = __toESM(require_github(), 1);
 async function fetchPullRequestDataFromMergeGroupRef(headRef) {
   const match = headRef.match(/gh-readonly-queue\/.*\/pr-(\d+)-/);
   const pullRequestNumber = match && match[1] ? Number(match[1]) : void 0;
@@ -28799,8 +27843,8 @@ async function fetchPullRequestData(sha) {
 }
 
 // src/validateInput.ts
-var core3 = __toESM(require_core());
-var github3 = __toESM(require_github());
+var core3 = __toESM(require_core(), 1);
+var github3 = __toESM(require_github(), 1);
 
 // src/types.ts
 var urlSchema = z.string().url();
@@ -28874,7 +27918,7 @@ function validateInput(relevantEventData) {
     validatedEnvironmentVariables = result.data;
   }
   const rawQawolfBaseUrl = core3.getInput("qawolf-base-url").trim();
-  const qawolfBaseUrl2 = rawQawolfBaseUrl || void 0;
+  const qawolfBaseUrl = rawQawolfBaseUrl || void 0;
   return {
     apiKey: qawolfApiKey,
     deployConfig: {
@@ -28893,7 +27937,7 @@ function validateInput(relevantEventData) {
       variables: validatedEnvironmentVariables
     },
     isValid: true,
-    qawolfBaseUrl: qawolfBaseUrl2
+    qawolfBaseUrl
   };
 }
 
@@ -28908,12 +27952,12 @@ async function runGitHubAction() {
     core4.setFailed(`Action input is invalid: ${validationResult.error}`);
     return;
   }
-  const { apiKey, deployConfig, qawolfBaseUrl: qawolfBaseUrl2 } = validationResult;
+  const { apiKey, deployConfig, qawolfBaseUrl } = validationResult;
   const { attemptNotifyDeploy: attemptNotifyDeploy2 } = makeQaWolfSdk(
     {
       apiKey,
-      serviceBase: qawolfBaseUrl2,
-      userAgent: `notify-qawolf-on-deploy-action/${version3}`
+      serviceBase: qawolfBaseUrl,
+      userAgent: `notify-qawolf-on-deploy-action/${package_default2.version}`
     },
     {
       // Replace default log driver with core logging.

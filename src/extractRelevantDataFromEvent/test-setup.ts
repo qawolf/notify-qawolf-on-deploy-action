@@ -1,4 +1,9 @@
-import * as github from "@actions/github";
+import { jest } from "@jest/globals";
+
+import {
+  type PullGetPartialResponse,
+  type PullSearchPartialResponse,
+} from "./mock-types.js";
 
 const TEST_BRANCH = "feature-branch";
 const TEST_PR_NUMBER = 123;
@@ -19,36 +24,35 @@ export const mockPayload = {
 export const mockPullRequest = {
   head: { ref: TEST_BRANCH, sha: TEST_SHA },
   number: TEST_PR_NUMBER,
-  state: "open",
+  state: "open" as const,
   title: TEST_PR_TITLE,
   updated_at: TEST_DATE,
 };
 
-export const mockOctokit = {
-  rest: {
-    repos: {
-      listPullRequestsAssociatedWithCommit: jest.fn().mockResolvedValue({
-        data: [mockPullRequest],
-      }),
-    },
+export const mockContext = {
+  eventName: "",
+  ref: "refs/heads/main",
+  get repo() {
+    return { owner: "owner", repo: "repo" };
   },
-};
-
-export const setupGithubContext = () => {
-  (github.context as Partial<typeof github.context>) = {
-    eventName: "",
-    ref: "refs/heads/main",
-    repo: {
-      owner: "owner",
-      repo: "repo",
-    },
-    sha: TEST_SHA,
-  };
+  sha: TEST_SHA,
 };
 
 export const setupTestEnvironment = () => {
-  jest.resetAllMocks();
-  setupGithubContext();
-  (github.getOctokit as jest.Mock).mockReturnValue(mockOctokit);
   process.env.GITHUB_TOKEN = "test-token";
 };
+
+export const mockGetPullRequest =
+  jest.fn<() => Promise<PullGetPartialResponse>>();
+export const mockSearchIssuesAndPullRequests =
+  jest.fn<() => Promise<PullSearchPartialResponse>>();
+export const mockOctokit = jest.fn().mockImplementation(() => ({
+  rest: {
+    pulls: {
+      get: mockGetPullRequest,
+    },
+    search: {
+      issuesAndPullRequests: mockSearchIssuesAndPullRequests,
+    },
+  },
+}));

@@ -1,15 +1,53 @@
-import * as core from "@actions/core";
-import * as github from "@actions/github";
+import { jest } from "@jest/globals";
 
-import { extractRelevantDataFromDeployment } from ".";
 import {
+  mockContext,
+  mockGetPullRequest,
+  mockOctokit,
   mockPayload,
   mockPullRequest,
+  mockSearchIssuesAndPullRequests,
   setupTestEnvironment,
-} from "./test-setup";
+} from "./test-setup.js";
 
-jest.mock("@actions/core");
-jest.mock("@actions/github");
+jest.mock("@actions/github", () => ({
+  context: mockContext,
+  getOctokit: mockOctokit,
+}));
+mockGetPullRequest.mockResolvedValue({
+  data: mockPullRequest,
+});
+mockSearchIssuesAndPullRequests.mockResolvedValue({
+  data: {
+    items: [
+      {
+        ...mockPullRequest,
+        pull_request: {},
+        state: "open",
+        title: "Latest PR",
+        updated_at: "2020-03-19T00:00:00Z",
+      },
+      {
+        ...mockPullRequest,
+        number: mockPullRequest.number + 1,
+        pull_request: {},
+        state: "open",
+        title: "Older PR",
+        updated_at: "2020-03-18T00:00:00Z",
+      },
+    ],
+  },
+});
+const mockInfo = jest.fn();
+jest.mock("@actions/core", () => ({
+  error: jest.fn(),
+  info: mockInfo,
+  warning: jest.fn(),
+}));
+
+const core = await import("@actions/core");
+const github = await import("@actions/github");
+const { extractRelevantDataFromDeployment } = await import("./index.js");
 
 describe("extractRelevantDataFromDeploymentEvent", () => {
   let originalToken: string | undefined;
@@ -33,41 +71,6 @@ describe("extractRelevantDataFromDeploymentEvent", () => {
       },
       ...mockPayload,
     };
-
-    const mockOctokit = {
-      rest: {
-        pulls: {
-          get: jest.fn().mockResolvedValue({
-            data: mockPullRequest,
-          }),
-        },
-        search: {
-          issuesAndPullRequests: jest.fn().mockResolvedValue({
-            data: {
-              items: [
-                {
-                  ...mockPullRequest,
-                  pull_request: {},
-                  state: "open",
-                  title: "Latest PR",
-                  updated_at: "2020-03-19T00:00:00Z",
-                },
-                {
-                  ...mockPullRequest,
-                  number: mockPullRequest.number + 1,
-                  pull_request: {},
-                  state: "open",
-                  title: "Older PR",
-                  updated_at: "2020-03-18T00:00:00Z",
-                },
-              ],
-            },
-          }),
-        },
-      },
-    };
-
-    (github.getOctokit as jest.Mock).mockReturnValue(mockOctokit);
 
     const result = await extractRelevantDataFromDeployment(github.context);
 

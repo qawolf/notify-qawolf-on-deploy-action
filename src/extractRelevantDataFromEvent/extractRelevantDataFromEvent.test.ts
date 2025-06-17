@@ -1,14 +1,28 @@
-import * as github from "@actions/github";
+import { jest } from "@jest/globals";
 
-import { extractRelevantDataFromEvent } from ".";
 import {
+  mockContext,
+  mockGetPullRequest,
+  mockOctokit,
   mockPayload,
   mockPullRequest,
+  mockSearchIssuesAndPullRequests,
   setupTestEnvironment,
-} from "./test-setup";
+} from "./test-setup.js";
 
-jest.mock("@actions/core");
-jest.mock("@actions/github");
+jest.mock("@actions/github", () => ({
+  context: mockContext,
+  getOctokit: mockOctokit,
+}));
+const mockInfo = jest.fn();
+jest.mock("@actions/core", () => ({
+  error: jest.fn(),
+  info: mockInfo,
+  warning: jest.fn(),
+}));
+
+const github = await import("@actions/github");
+const { extractRelevantDataFromEvent } = await import("./index.js");
 
 describe("extractRelevantDataFromEvent", () => {
   let originalToken: string | undefined;
@@ -34,6 +48,9 @@ describe("extractRelevantDataFromEvent", () => {
         sha: mockPullRequest.head.sha,
       },
     };
+    mockSearchIssuesAndPullRequests.mockImplementationOnce(async () => ({
+      data: { items: [] },
+    }));
 
     const result = await extractRelevantDataFromEvent(github.context);
 
@@ -55,6 +72,9 @@ describe("extractRelevantDataFromEvent", () => {
         },
       },
     };
+    mockSearchIssuesAndPullRequests.mockImplementationOnce(async () => ({
+      data: { items: [] },
+    }));
 
     const result = await extractRelevantDataFromEvent(github.context);
 
@@ -95,25 +115,14 @@ describe("extractRelevantDataFromEvent", () => {
         head_sha: mockPullRequest.head.sha,
       },
     };
-
-    const mockOctokit = {
-      rest: {
-        pulls: {
-          get: jest.fn().mockResolvedValue({
-            data: mockPullRequest,
-          }),
-        },
-        search: {
-          issuesAndPullRequests: jest.fn().mockResolvedValue({
-            data: {
-              items: [{ ...mockPullRequest }],
-            },
-          }),
-        },
+    mockGetPullRequest.mockResolvedValue({
+      data: mockPullRequest,
+    });
+    mockSearchIssuesAndPullRequests.mockResolvedValue({
+      data: {
+        items: [mockPullRequest],
       },
-    };
-
-    (github.getOctokit as jest.Mock).mockReturnValue(mockOctokit);
+    });
 
     const result = await extractRelevantDataFromEvent(github.context);
 
@@ -132,40 +141,30 @@ describe("extractRelevantDataFromEvent", () => {
         url: `https://github.com/owner/repo/commit/${mockPullRequest.head.sha}`,
       },
     };
-
-    const mockOctokit = {
-      rest: {
-        pulls: {
-          get: jest.fn().mockResolvedValue({
-            data: mockPullRequest,
-          }),
-        },
-        search: {
-          issuesAndPullRequests: jest.fn().mockResolvedValue({
-            data: {
-              items: [
-                {
-                  ...mockPullRequest,
-                  pull_request: {},
-                  state: "open",
-                  updated_at: "2020-03-19T00:00:00Z",
-                },
-                {
-                  ...mockPullRequest,
-                  number: mockPullRequest.number + 1,
-                  pull_request: {},
-                  state: "closed",
-                  title: "Latest PR",
-                  updated_at: "2020-03-18T00:00:00Z",
-                },
-              ],
-            },
-          }),
-        },
+    mockGetPullRequest.mockResolvedValue({
+      data: mockPullRequest,
+    });
+    mockSearchIssuesAndPullRequests.mockResolvedValue({
+      data: {
+        items: [
+          {
+            ...mockPullRequest,
+            pull_request: {},
+            state: "open",
+            updated_at: "2020-03-19T00:00:00Z",
+          },
+          {
+            ...mockPullRequest,
+            number: mockPullRequest.number + 1,
+            pull_request: {},
+            state: "closed",
+            title: "Latest PR",
+            updated_at: "2020-03-18T00:00:00Z",
+          },
+        ],
       },
-    };
+    });
 
-    (github.getOctokit as jest.Mock).mockReturnValue(mockOctokit);
     const result = await extractRelevantDataFromEvent(github.context);
 
     expect(result).toEqual({

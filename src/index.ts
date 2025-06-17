@@ -4,10 +4,10 @@ import * as github from "@actions/github";
 import { makeQaWolfSdk } from "@qawolf/ci-sdk";
 import { coreLogDriver, stringifyUnknown } from "@qawolf/ci-utils";
 
-import { version } from "../package.json";
+import packageJson from "../package.json" with { type: "json" };
 
-import { extractRelevantDataFromEvent } from "./extractRelevantDataFromEvent";
-import { validateInput } from "./validateInput";
+import { extractRelevantDataFromEvent } from "./extractRelevantDataFromEvent/index.js";
+import { validateInput } from "./validateInput.js";
 
 async function runGitHubAction() {
   core.debug("Extracting relevant event data.");
@@ -24,7 +24,7 @@ async function runGitHubAction() {
     {
       apiKey,
       serviceBase: qawolfBaseUrl,
-      userAgent: `notify-qawolf-on-deploy-action/${version}`,
+      userAgent: `notify-qawolf-on-deploy-action/${packageJson.version}`,
     },
     {
       // Replace default log driver with core logging.

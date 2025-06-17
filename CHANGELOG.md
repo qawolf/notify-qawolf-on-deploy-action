@@ -1,3 +1,7 @@
+## v1.1.5
+
+- Allow `pull-request-number` as a valid input param
+
 ## v1.1.4
 
 - Fix a problem where the `sha` passed in via `merge_group` events was wrong, causing commit checks to never complete

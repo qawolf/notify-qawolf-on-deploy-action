@@ -7,8 +7,8 @@ import {
   jsonEnvironmentVariablesSchema,
 } from "@qawolf/ci-utils";
 
-import { type RelevantEventData } from "./extractRelevantDataFromEvent";
-import { urlSchema } from "./types";
+import { type RelevantEventData } from "./extractRelevantDataFromEvent/index.js";
+import { urlSchema } from "./types.js";
 
 export function validateInput(
   relevantEventData: RelevantEventData | undefined,
