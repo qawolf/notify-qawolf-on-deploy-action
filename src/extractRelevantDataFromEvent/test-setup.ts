@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
 
-import {
-  type PullGetPartialResponse,
-  type PullSearchPartialResponse,
+import type {
+  PullGetPartialResponse,
+  PullSearchPartialResponse,
 } from "./mock-types.js";
 
 const TEST_BRANCH = "feature-branch";

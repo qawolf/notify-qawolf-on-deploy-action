@@ -1,10 +1,10 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import {
-  type DeploymentStatusCreatedEvent,
-  type MergeGroupEvent,
-  type PullRequestEvent,
-  type PushEvent,
+import type {
+  DeploymentStatusCreatedEvent,
+  MergeGroupEvent,
+  PullRequestEvent,
+  PushEvent,
 } from "@octokit/webhooks-types";
 
 import { fetchPullRequestDataFromMergeGroupRef } from "./fetchPullRequestDataFromMergeGroupRef.js";

@@ -11,7 +11,7 @@ Refer to the [official documentation](https://qawolf.notion.site/Deploy-Success-
 
 ### `qawolf-api-key`
 
-**Required**. The QA Wolf API key, which you can find on the application's team settings page.
+**Required**. The QA Wolf API key, which you can find on the application's workspace settings page.
 
 ### `deployment-type`
 

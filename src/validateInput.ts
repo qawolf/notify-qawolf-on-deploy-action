@@ -1,13 +1,13 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { type GitHubDeployConfig } from "@qawolf/ci-sdk";
+import type { GitHubDeployConfig } from "@qawolf/ci-sdk";
 import {
   type EnvironmentVariables,
   jsonEnvironmentVariablesSchema,
 } from "@qawolf/ci-utils";
 
-import { type RelevantEventData } from "./extractRelevantDataFromEvent/index.js";
+import type { RelevantEventData } from "./extractRelevantDataFromEvent/index.js";
 import { urlSchema } from "./types.js";
 
 export function validateInput(

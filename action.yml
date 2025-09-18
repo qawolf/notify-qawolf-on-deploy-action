@@ -5,7 +5,7 @@ branding:
   color: "purple"
 inputs:
   qawolf-api-key:
-    description: "QA Wolf API key. You can find it in the application team settings page."
+    description: "QA Wolf API key. You can find it in the application workspace settings page."
     required: true
   sha:
     description: "(May be required depending on your setup). The SHA of the git commit to be tested.  Refer to our official documentation for more details."
