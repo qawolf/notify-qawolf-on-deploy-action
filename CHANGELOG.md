@@ -1,3 +1,7 @@
+## v1.2.0
+
+- Don't guess a recent PR number based on SHA for non-PR events
+
 ## v1.1.5
 
 - Allow `pull-request-number` as a valid input param

@@ -1,6 +1,6 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.1.6",
+  "version": "v1.2.0",
   "sideEffects": false,
   "type": "module",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "@qawolf/ci-sdk": "*",
     "@qawolf/ci-utils": "*",
     "tslib": "^2.6.2",
-    "zod": "^3.25.76"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "esbuild": "^0.25.9"

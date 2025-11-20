@@ -124,6 +124,8 @@ async function fetchPullRequestData(
   try {
     const { data: searchData } =
       await octokit.rest.search.issuesAndPullRequests({
+        // Required when using `q` queries
+        advanced_search: true,
         q: `repo:${context.repo.owner}/${context.repo.repo} is:pr ${sha} sort:updated-desc`,
       });
 
@@ -162,17 +164,7 @@ async function fetchPullRequestData(
       };
     }
 
-    // Fall back to most recent PR
-    const mostRecent = pullRequestDetails[0];
-    if (!mostRecent) return "no-pull-request";
-    core.info(
-      `No PR found with head SHA = ${sha}. Using most recent PR #${mostRecent.number} containing SHA = ${sha}`,
-    );
-
-    return {
-      branch: mostRecent.head.ref,
-      pullRequestNumber: mostRecent.number,
-    };
+    return "no-pull-request";
   } catch (error) {
     core.info(`Failed to fetch pull request data: ${error}`);
     return "fail-to-fetch-pull-request-data";
