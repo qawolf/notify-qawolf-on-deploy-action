@@ -22,6 +22,9 @@ inputs:
   deduplication-key:
     description: "An advanced feature to control runs superseding.  Refer to our official documentation for more details."
     required: false
+  ephemeral-environment:
+    description: "Whether the deployment is an ephemeral environment"
+    required: false
   commit-url:
     description: "If you don't have our GitHub application installed, you can pass the commit URL and it will be surfaced in the UI. Refer to our official documentation for more details."
     required: false

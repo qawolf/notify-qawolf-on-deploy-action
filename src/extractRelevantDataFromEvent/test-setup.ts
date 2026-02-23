@@ -38,10 +38,6 @@ export const mockContext = {
   sha: TEST_SHA,
 };
 
-export const setupTestEnvironment = () => {
-  process.env.GITHUB_TOKEN = "test-token";
-};
-
 export const mockGetPullRequest =
   jest.fn<() => Promise<PullGetPartialResponse>>();
 export const mockSearchIssuesAndPullRequests =

@@ -1,6 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
+import { env } from "../env.js";
+
 export async function fetchPullRequestDataFromMergeGroupRef(headRef: string) {
   // Match pattern: gh-readonly-queue/{branch}/pr-{number}-{hash}
   const match = headRef.match(/gh-readonly-queue\/.*\/pr-(\d+)-/);
@@ -13,7 +15,7 @@ export async function fetchPullRequestDataFromMergeGroupRef(headRef: string) {
     return "no-pull-request";
   }
 
-  if (!process.env.GITHUB_TOKEN) {
+  if (!env.GITHUB_TOKEN) {
     core.info(
       "GITHUB_TOKEN is missing, skipping branch extraction for merge group",
     );
@@ -21,7 +23,7 @@ export async function fetchPullRequestDataFromMergeGroupRef(headRef: string) {
   }
 
   const { context } = github;
-  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+  const octokit = github.getOctokit(env.GITHUB_TOKEN);
   const { data: pullRequest } = await octokit.rest.pulls.get({
     owner: context.repo.owner,
     pull_number: pullRequestNumber,

@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import type { GitHubDeployConfig } from "@qawolf/ci-sdk";
+import type { EphemeralDeployConfig, GitHubDeployConfig } from "@qawolf/ci-sdk";
 import {
   type EnvironmentVariables,
   jsonEnvironmentVariablesSchema,
@@ -15,7 +15,7 @@ export function validateInput(
 ):
   | {
       apiKey: string;
-      deployConfig: GitHubDeployConfig;
+      deployConfig: GitHubDeployConfig | EphemeralDeployConfig;
       isValid: true;
       qawolfBaseUrl: string | undefined;
     }
@@ -42,6 +42,11 @@ export function validateInput(
   const environmentVariablesInput = core.getInput("variables", {
     required: false,
   });
+  const ephemeralEnvironmentInput = core
+    .getInput("ephemeral-environment", {
+      required: false,
+    })
+    .trim();
   const deduplicationKeyInput =
     core.getInput("deduplication-key", {
       required: false,
@@ -127,6 +132,9 @@ export function validateInput(
       variables: validatedEnvironmentVariables,
     },
     isValid: true,
+    ...(ephemeralEnvironmentInput === "true"
+      ? { ephemeralEnvironment: true }
+      : {}),
     qawolfBaseUrl,
   };
 }

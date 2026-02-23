@@ -1,3 +1,7 @@
+## v1.2.1
+
+- Allow `ephemeral-environment` as a valid input param
+
 ## v1.2.0
 
 - Don't guess a recent PR number based on SHA for non-PR events

@@ -7,7 +7,6 @@ import {
   mockPayload,
   mockPullRequest,
   mockSearchIssuesAndPullRequests,
-  setupTestEnvironment,
 } from "./test-setup.js";
 
 jest.mock("@actions/github", () => ({
@@ -47,23 +46,16 @@ jest.mock("@actions/core", () => ({
 
 const core = await import("@actions/core");
 const github = await import("@actions/github");
+
+jest.unstable_mockModule("../env.js", () => ({
+  env: {
+    GITHUB_TOKEN: "test-token",
+  },
+}));
+
 const { extractRelevantDataFromDeployment } = await import("./index.js");
 
 describe("extractRelevantDataFromDeploymentEvent", () => {
-  let originalToken: string | undefined;
-
-  beforeAll(() => {
-    originalToken = process.env.GITHUB_TOKEN;
-  });
-
-  beforeEach(() => {
-    setupTestEnvironment();
-  });
-
-  afterAll(() => {
-    process.env.GITHUB_TOKEN = originalToken;
-  });
-
   it("should handle multiple associated pull requests", async () => {
     github.context.payload = {
       deployment: {

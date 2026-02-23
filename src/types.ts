@@ -1,3 +1,3 @@
 import { z } from "zod";
 
-export const urlSchema = z.string().url();
+export const urlSchema = z.url();

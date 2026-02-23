@@ -29,6 +29,10 @@ An advanced feature that allows you to control run superseding.
 
 JSON-formatted environment variables for the deployment to be tested.
 
+### `ephemeral-environment`
+
+Whether the deployment is an ephemeral environment
+
 ## Auto-Extracted Inputs (Optional)
 
 The following inputs are automatically extracted from the GitHub event context. They only need to be specified if you want to override the default values.

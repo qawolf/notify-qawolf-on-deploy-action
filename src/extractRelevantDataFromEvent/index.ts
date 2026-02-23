@@ -7,6 +7,8 @@ import type {
   PushEvent,
 } from "@octokit/webhooks-types";
 
+import { env } from "../env.js";
+
 import { fetchPullRequestDataFromMergeGroupRef } from "./fetchPullRequestDataFromMergeGroupRef.js";
 
 export type RelevantEventData = {
@@ -113,19 +115,19 @@ async function fetchPullRequestData(
   | "fail-to-fetch-pull-request-data"
   | "missing-github-token"
 > {
-  if (!process.env.GITHUB_TOKEN) {
+  if (!env.GITHUB_TOKEN) {
     core.info("GITHUB_TOKEN is missing, skipping pull request data extraction");
     return "missing-github-token";
   }
 
   const { context } = github;
-  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+  const octokit = github.getOctokit(env.GITHUB_TOKEN);
 
   try {
     const { data: searchData } =
       await octokit.rest.search.issuesAndPullRequests({
         // Required when using `q` queries
-        advanced_search: true,
+        advanced_search: "true",
         q: `repo:${context.repo.owner}/${context.repo.repo} is:pr ${sha} sort:updated-desc`,
       });
 

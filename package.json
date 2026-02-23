@@ -1,6 +1,6 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.2.0",
+  "version": "v1.2.1",
   "sideEffects": false,
   "type": "module",
   "main": "dist/index.js",
@@ -14,8 +14,8 @@
     "tsc:check": "tsc"
   },
   "dependencies": {
-    "@actions/core": "^1.10.1",
-    "@actions/github": "^6.0.0",
+    "@actions/core": "^2.0.3",
+    "@actions/github": "^9.0.0",
     "@octokit/webhooks-types": "^7.6.1",
     "@qawolf/ci-sdk": "*",
     "@qawolf/ci-utils": "*",
@@ -26,6 +26,6 @@
     "esbuild": "^0.25.9"
   },
   "engines": {
-    "node": "^20"
+    "node": ">=22.22.0 <25"
   }
 }
