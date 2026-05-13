@@ -9,12 +9,12 @@ import {
   mockSearchIssuesAndPullRequests,
 } from "./test-setup.js";
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: mockContext,
   getOctokit: mockOctokit,
 }));
 const mockInfo = jest.fn();
-jest.mock("@actions/core", () => ({
+jest.unstable_mockModule("@actions/core", () => ({
   error: jest.fn(),
   info: mockInfo,
   warning: jest.fn(),

@@ -1,3 +1,7 @@
+## v2.0.0
+
+- The action now runs on Node 24.
+
 ## v1.2.1
 
 - Allow `ephemeral-environment` as a valid input param

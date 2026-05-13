@@ -8,6 +8,7 @@ const defaultInputs = {
   "deduplication-key": "test-key",
   "deployment-type": "production",
   "deployment-url": "https://example.com",
+  "ephemeral-environment": "test-env",
   "pull-request-number": "123",
   "qawolf-api-key": "test-api-key",
   "qawolf-base-url": "https://qawolf.com",
@@ -15,11 +16,11 @@ const defaultInputs = {
   variables: JSON.stringify({ key: "value" }),
 };
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: mockContext,
 }));
 const mockGetInput = jest.fn<(name: string) => any>();
-jest.mock("@actions/core", () => ({
+jest.unstable_mockModule("@actions/core", () => ({
   error: jest.fn(),
   getInput: mockGetInput,
   info: jest.fn(),

@@ -1,14 +1,16 @@
 {
   "name": "@qawolf/notify-qawolf-on-deploy-action",
-  "version": "v1.2.1",
+  "version": "v2.0.0",
+  "private": false,
   "sideEffects": false,
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "rm -rf ./dist && node esbuild.mjs",
-    "lint": "dpdm --exit-code circular:1 --no-tree --no-warning --transform --include='.*' --exclude='/(dist|node_modules)/' '**/*' && eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --quiet && prettier --check .",
-    "lint:fix": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
-    "lint:warnings": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx",
+    "lint:ci": "npm run lint:non-fixable; NON_FIXABLE_EXIT=$?; npm run lint:fixable && exit $NON_FIXABLE_EXIT",
+    "lint:dev": "npm run lint:fixable",
+    "lint:fixable": "eslint . --ext cjs,cts,js,jsx,mjs,ts,tsx --fix --quiet && prettier --log-level=warn --write .",
+    "lint:non-fixable": "dpdm --exit-code circular:1 --no-tree --no-warning --transform --include='.*' --exclude='/(dist|node_modules)/' '**/*'",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules\" NODE_NO_WARNINGS=1 jest --passWithNoTests",
     "test:watch": "npm run test -- --watch",
     "tsc:check": "tsc"

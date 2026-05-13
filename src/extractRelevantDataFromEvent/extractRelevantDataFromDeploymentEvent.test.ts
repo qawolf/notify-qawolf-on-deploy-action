@@ -9,7 +9,7 @@ import {
   mockSearchIssuesAndPullRequests,
 } from "./test-setup.js";
 
-jest.mock("@actions/github", () => ({
+jest.unstable_mockModule("@actions/github", () => ({
   context: mockContext,
   getOctokit: mockOctokit,
 }));
